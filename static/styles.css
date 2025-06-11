@@ -5,3 +5,4 @@ body {
   margin: 0;
   font-weight: 700;
 }
+.navbar-toggler-icon { filter: invert(1); }

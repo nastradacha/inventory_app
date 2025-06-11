@@ -7,3 +7,11 @@ class Config:
         f"sqlite:///{os.path.join(basedir, 'inventory.db')}"
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+    # --- Currency settings ---------------------------------------------
+    # Default symbol set to Ghanaian Cedi. Change via env var later:
+    #   Windows:   set CURRENCY_SYMBOL=$
+    #   macOS/Linux: export CURRENCY_SYMBOL=$
+    # Or on Render: add env var CURRENCY_SYMBOL=₦ etc.
+    CURRENCY_SYMBOL = os.getenv("CURRENCY_SYMBOL", "GH₵")
+    # --------------------------------------------------------------------

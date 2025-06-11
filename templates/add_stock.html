@@ -3,7 +3,7 @@
 <h2>Add / Restock Product</h2>
 <form method="post" class="row g-3" novalidate>
   {{ form.hidden_tag() }}
-  {% for field in form if field.type != 'SubmitField' %}
+  {% for field in form if field.name != 'csrf_token' and field.type != 'SubmitField' %}
   <div class="col-md-6">
     {{ field.label(class_='form-label') }}
     {{ field(class_='form-control') }}

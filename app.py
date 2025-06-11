@@ -6,11 +6,15 @@ from forms import AddStockForm, RecordSaleForm
 
 app = Flask(__name__)
 app.config.from_object(Config)
+
 db.init_app(app)
 
-@app.before_first_request
-def create_tables():
+# --- database setup -------------------------------------------------------
+# Flask 3.0 removed the before_first_request decorator. We now create the
+# tables once at startup, inside an application context.
+with app.app_context():
     db.create_all()
+# -------------------------------------------------------------------------
 
 @app.route('/')
 def dashboard():
@@ -19,8 +23,15 @@ def dashboard():
     total_value = sum(p.qty_at_hand * p.selling_price for p in products)
     total_profit = total_value - total_cost
     low_stock = [p for p in products if p.qty_at_hand < 5]
-    top_sales = (db.session.query(Product.name, db.func.sum(Sale.qty_sold).label('units'))
-                 .join(Sale).group_by(Product.name).order_by(db.desc('units')).limit(5).all())
+    top_sales = (
+        db.session.query(Product.name, db.func.sum(Sale.qty_sold).label('units'))
+        .join(Sale)
+        .group_by(Product.name)
+        .order_by(db.desc('units'))
+        .limit(5)
+        .all()
+    )
+    currency = app.config['CURRENCY_SYMBOL']
     return render_template('dashboard.html', **locals())
 
 @app.route('/add-stock', methods=['GET', 'POST'])
@@ -42,7 +53,7 @@ def add_stock():
                 cost_price=form.cost_price.data,
                 selling_price=form.selling_price.data,
                 initial_qty=form.quantity.data,
-                qty_at_hand=form.quantity.data
+                qty_at_hand=form.quantity.data,
             )
             db.session.add(p)
         db.session.commit()
@@ -53,14 +64,20 @@ def add_stock():
 @app.route('/record-sale', methods=['GET', 'POST'])
 def record_sale():
     form = RecordSaleForm()
-    form.product_id.choices = [(p.id, p.name) for p in Product.query.order_by(Product.name)]
+    form.product_id.choices = [
+        (p.id, p.name) for p in Product.query.order_by(Product.name)
+    ]
     if form.validate_on_submit():
         product = Product.query.get(int(form.product_id.data))
         if product.qty_at_hand < form.quantity.data:
             flash('Not enough stock!', 'danger')
         else:
             product.qty_at_hand -= form.quantity.data
-            sale = Sale(product_id=product.id, qty_sold=form.quantity.data, date=date.today())
+            sale = Sale(
+                product_id=product.id,
+                qty_sold=form.quantity.data,
+                date=date.today(),
+            )
             db.session.add(sale)
             db.session.commit()
             flash('Sale recorded.', 'success')
@@ -68,4 +85,7 @@ def record_sale():
     return render_template('record_sale.html', form=form)
 
 if __name__ == '__main__':
+    # Ensure tables exist when running via `python app.py` as well
+    with app.app_context():
+        db.create_all()
     app.run(debug=True)

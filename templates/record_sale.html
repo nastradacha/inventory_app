@@ -3,14 +3,12 @@
 <h2>Record Sale</h2>
 <form method="post" class="row g-3" novalidate>
   {{ form.hidden_tag() }}
+  {% for field in form if field.name != 'csrf_token' and field.type != 'SubmitField' %}
   <div class="col-md-6">
-    {{ form.product_id.label(class_='form-label') }}
-    {{ form.product_id(class_='form-select') }}
+    {{ field.label(class_='form-label') }}
+    {{ field(class_='form-control' if field.type != 'SelectField' else 'form-select') }}
   </div>
-  <div class="col-md-6">
-    {{ form.quantity.label(class_='form-label') }}
-    {{ form.quantity(class_='form-control') }}
-  </div>
+  {% endfor %}
   <div class="col-12"><button class="btn btn-primary">Record</button></div>
 </form>
 {% endblock %}
