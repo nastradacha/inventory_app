@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1 class="mb-4">Dashboard</h1>
+<div class="row g-3 mb-4">
+  <div class="col-sm-4"><div class="card p-3 text-center">
+    <h5>Total Inventory Cost</h5><h3>₦{{ '{:,.2f}'.format(total_cost) }}</h3></div></div>
+  <div class="col-sm-4"><div class="card p-3 text-center">
+    <h5>Potential Revenue</h5><h3>₦{{ '{:,.2f}'.format(total_value) }}</h3></div></div>
+  <div class="col-sm-4"><div class="card p-3 text-center">
+    <h5>Potential Profit</h5><h3>₦{{ '{:,.2f}'.format(total_profit) }}</h3></div></div>
+</div>
+<h3>Low‑stock Items (&lt;5)</h3>
+<table class="table table-sm table-striped"><thead><tr><th>Product</th><th>Qty</th></tr></thead><tbody>
+{% for p in low_stock %}
+<tr><td>{{ p.name }}</td><td>{{ p.qty_at_hand }}</td></tr>
+{% endfor %}
+</tbody></table>
+<h3 class="mt-4">Top Sellers</h3>
+<table class="table table-sm table-striped"><thead><tr><th>Product</th><th>Units Sold</th></tr></thead><tbody>
+{% for name, units in top_sales %}
+<tr><td>{{ name }}</td><td>{{ units }}</td></tr>
+{% endfor %}
+</tbody></table>
+{% endblock %}

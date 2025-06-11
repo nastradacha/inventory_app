@@ -1,0 +1,1 @@
+// To enable camera barcode scanning later, integrate QuaggaJS here.
