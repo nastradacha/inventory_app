@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3>Confirm New / Duplicate Product</h3>
+<p>The item you entered looks similar to an existing product.  
+Proceed only if you’re sure it’s different.</p>
+
+<ul class="list-group mb-3">
+  <li class="list-group-item"><strong>Name:</strong> {{ pending.name }}</li>
+  <li class="list-group-item"><strong>Qty:</strong> {{ pending.quantity }}</li>
+  <li class="list-group-item"><strong>Cost:</strong> {{ pending.cost_price }}</li>
+  <li class="list-group-item"><strong>Sell:</strong> {{ pending.selling_price }}</li>
+</ul>
+
+<form method="post" class="d-flex gap-2">
+  <button name="confirm" class="btn btn-success">Confirm</button>
+  <button name="cancel" class="btn btn-secondary">Cancel</button>
+</form>
+{% endblock %}

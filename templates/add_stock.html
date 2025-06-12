@@ -1,17 +1,44 @@
 {% extends 'base.html' %}
+
 {% block content %}
 <h2>Add / Restock Product</h2>
 <form method="post" class="row g-3" novalidate>
   {{ form.hidden_tag() }}
-  {% for field in form if field.name != 'csrf_token' and field.type != 'SubmitField' %}
+
+  <!-- Product name field rendered as Select2 -->
   <div class="col-md-6">
-    {{ field.label(class_='form-label') }}
-    {{ field(class_='form-control') }}
-    {% if field.errors %}
-      <div class="text-danger small">{{ field.errors[0] }}</div>
-    {% endif %}
+    <label class="form-label" for="name-select">Product name</label>
+    <select id="name-select" name="name" class="form-select" style="width:100%">
+      <option></option>  <!-- blank placeholder -->
+      {% for n in all_names %}
+        <option value="{{ n }}">{{ n }}</option>
+      {% endfor %}
+    </select>
   </div>
+
+  <!-- Render the rest of the fields -->
+  {% for field in form if field.name not in ['csrf_token', 'name', 'submit'] %}
+    <div class="col-md-6">
+      {{ field.label(class_='form-label') }}
+      {{ field(class_='form-control') }}
+      {% if field.errors %}
+        <div class="text-danger small">{{ field.errors[0] }}</div>
+      {% endif %}
+    </div>
   {% endfor %}
+
   <div class="col-12"><button class="btn btn-success">Submit</button></div>
 </form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+$(function () {
+  $('#name-select').select2({
+    placeholder: 'Type or pick product',
+    allowClear: true,
+    tags: true           // lets user add a brand-new name
+  });
+});
+</script>
 {% endblock %}

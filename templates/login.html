@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-sm-6 col-md-4">
+    <h2 class="mb-4 text-center">Sign In</h2>
+    <form method="post" class="card card-body" novalidate>
+      {{ form.hidden_tag() }}            {# inject CSRF token #}
+      <div class="mb-3">{{ form.username.label }}{{ form.username(class_='form-control') }}</div>
+      <div class="mb-3">{{ form.password.label }}{{ form.password(class_='form-control', type='password') }}</div>
+      {{ form.submit(class_='btn btn-primary w-100') }}
+    </form>
+  </div>
+</div>
+{% endblock %}

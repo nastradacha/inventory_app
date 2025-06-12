@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3>Product List</h3>
+<table class="table table-sm"><thead><tr><th>Name</th><th>Qty</th><th>Selling&nbsp;Price</th><th></th></tr></thead><tbody>
+{% for p in items %}
+<tr>
+  <td>{{ p.name }}</td>
+  <td>{{ p.qty_at_hand }}</td>
+  <td>{{ p.selling_price }}</td>
+  <td>
+    <a class="btn btn-sm btn-primary" href="{{ url_for('edit_product', pid=p.id) }}">Edit</a>
+    <form action="{{ url_for('delete_product', pid=p.id) }}" method="post" class="d-inline">
+      {{ csrf_token() }}
+      <button class="btn btn-sm btn-danger" onclick="return confirm('Delete?')">Delete</button>
+    </form>
+  </td>
+</tr>
+{% endfor %}
+</tbody></table>
+{% endblock %}
