@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3>Closed Shifts</h3>
+<table class="table table-sm"><thead><tr><th>Cashier</th><th>Opened</th><th>Closed</th><th class="text-end">Qty</th><th class="text-end">Revenue</th></tr></thead><tbody>
+{% for s in shifts %}
+<tr>
+  <td>{{ s.cashier.username }}</td>
+  <td>{{ s.opened_at.strftime('%d %b %H:%M') }}</td>
+  <td>{{ s.closed_at.strftime('%d %b %H:%M') }}</td>
+  <td class="text-end">{{ s.total_qty }}</td>
+  <td class="text-end">{{ currency }}{{ '{:,.2f}'.format(s.total_rev) }}</td>
+</tr>
+{% endfor %}
+</tbody></table>
+{% endblock %}

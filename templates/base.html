@@ -12,30 +12,50 @@
   </head>
   <body class="bg-light">
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="{{ url_for('dashboard') }}">Inventory</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-              aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
+        <div class="container-fluid">
+          <a class="navbar-brand" href="{{ url_for('dashboard') }}">Inventory</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                  aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
 
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav me-auto">
-          {% if current_user.is_authenticated and current_user.role=='manager' %}
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('add_stock') }}">Add Stock</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('products') }}">Products</a></li> <!-- New Link -->
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('users') }}">Users</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('sales_today') }}">Sales Today</a></li>
-          {% endif %}
-          <li class="nav-item"><a class="nav-link" href="{{ url_for('record_sale') }}">Record Sale</a></li>
-        </ul>
-        {% if current_user.is_authenticated %}
-          <span class="navbar-text me-2">{{ current_user.username }}</span>
-          <a class="nav-link d-inline" href="{{ url_for('logout') }}">Logout</a>
-        {% endif %}
-      </div>
-    </div>
-  </nav>
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+              {% if current_user.is_authenticated and current_user.role == 'manager' %}
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('add_stock') }}">Add Stock</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('products') }}">Products</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('users') }}">Users</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('sales_today') }}">Sales Today</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('shift_list') }}">Shifts</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('logs') }}">Audit</a></li>
+              {% endif %}
+              <li class="nav-item"><a class="nav-link" href="{{ url_for('record_sale') }}">Record Sale</a></li>
+            </ul>
+
+            <!-- Cashier Shift Controls (RIGHT SIDE of Navbar) -->
+            {% if current_user.is_authenticated and current_user.role == 'cashier' %}
+              {% if open_shift %}
+                <span class="badge bg-info me-2">
+                  {{ shift_qty }} / {{ currency }}{{ '{:,.2f}'.format(shift_rev) }}
+                </span>
+                <form action="{{ url_for('close_shift') }}" method="post" class="d-inline">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <button class="btn btn-sm btn-warning">Close Shift</button>
+                </form>
+              {% else %}
+                <a class="btn btn-sm btn-success" href="{{ url_for('open_shift') }}">Open Shift</a>
+              {% endif %}
+            {% endif %}
+            <!-- User Authentication -->
+            {% if current_user.is_authenticated %}
+              <span class="navbar-text me-2">{{ current_user.username }}</span>
+              <a class="nav-link d-inline" href="{{ url_for('logout') }}">Logout</a>
+            {% else %}
+              <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+            {% endif %}
+          </div>
+        </div>
+      </nav>
 
     <div class="container py-4">
       {% with messages = get_flashed_messages(with_categories=true) %}

@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3>Audit Trail (latest 200)</h3>
+
+<table class="table table-sm">
+  <thead>
+    <tr>
+      <th>Date & Time</th>
+      <th>User</th>
+      <th>Action</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for log in logs %}
+    <tr>
+      <td>{{ log.timestamp.strftime('%d %b %H:%M') }}</td>
+      <td>{{ log.user }}</td>
+      <td>{{ log.action }}</td>
+      <td>{{ log.details }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

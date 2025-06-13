@@ -7,7 +7,7 @@ from forms import LoginForm
 
 from datetime import date, datetime
 from config import Config
-from models import db, Product, Sale, User
+from models import db, Product, Sale, User, PriceChange, LogEntry, Shift
 from forms import AddStockForm, RecordSaleForm, NewUserForm, ResetPwdForm, EditProductForm, EditSaleForm
 from rapidfuzz import fuzz
 
@@ -19,6 +19,13 @@ app.config.from_object(Config)
 csrf = CSRFProtect(app)
 
 db.init_app(app)
+
+def log(action, details):
+    db.session.add(
+        LogEntry(user=current_user.username,
+                 action=action,
+                 details=details))
+    db.session.commit()
 
 # --- database setup -------------------------------------------------------
 # Flask 3.0 removed the before_first_request decorator. We now create the
@@ -118,6 +125,7 @@ def add_stock():
 
 
 @app.route('/record-sale', methods=['GET', 'POST'])
+@login_required
 def record_sale():
     form = RecordSaleForm()
     form.product_id.choices = [
@@ -247,18 +255,34 @@ def products():
     items = Product.query.order_by(Product.name).all()
     return render_template('products.html', items=items)
 
-@app.route('/product/<int:pid>/edit', methods=['GET','POST'])
+@app.route('/product/<int:pid>/edit', methods=['GET', 'POST'])
 @login_required
 @manager_required
 def edit_product(pid):
     p = Product.query.get_or_404(pid)
     form = EditProductForm(obj=p)
+
     if form.validate_on_submit():
+        # ① record price-change in the history table
+        if form.selling_price.data != p.selling_price:
+            db.session.add(PriceChange(
+                product_id=p.id,
+                old_price=p.selling_price,
+                new_price=form.selling_price.data,
+                changed_by=current_user.username
+            ))
+            log('price-change', f'{p.name}: {p.selling_price} ➜ {form.selling_price.data}')
+
+        # ② apply the edits
         form.populate_obj(p)
         db.session.commit()
+
         flash('Product updated', 'success')
         return redirect(url_for('products'))
+
     return render_template('edit_product.html', form=form)
+
+
 
 @app.route('/product/<int:pid>/delete', methods=['POST'])
 @login_required
@@ -313,12 +337,92 @@ def void_sale(sid):
     return redirect(url_for('sales_today'))
 
 
+@app.route('/shift/open')
+@login_required
+def open_shift():
+    if Shift.query.filter_by(cashier_id=current_user.id, closed_at=None).first():
+        flash('Shift already open', 'warning')
+    else:
+        db.session.add(Shift(cashier_id=current_user.id))
+        db.session.commit()
+        log('shift-open', current_user.username)
+        flash('Shift opened', 'success')
+    return redirect(url_for('dashboard'))
+
+
+@app.route('/shift/close', methods=['POST'])
+@login_required
+def close_shift():
+    shift = Shift.query.filter_by(cashier_id=current_user.id, closed_at=None).first()
+    if not shift:
+        abort(400)
+    qty, rev = (db.session.query(db.func.sum(Sale.qty_sold),
+                                 db.func.sum(Sale.qty_sold*Product.selling_price))
+                .join(Product)
+                .filter(Sale.date >= shift.opened_at.date())
+                .first())
+    shift.total_qty = qty or 0
+    shift.total_rev = rev or 0.0
+    shift.closed_at = datetime.utcnow()
+    db.session.commit()
+    log('shift-close', f"{current_user.username} qty={shift.total_qty} rev={shift.total_rev}")
+    flash(f'Shift closed – Qty {shift.total_qty}  Rev {shift.total_rev}', 'info')
+    return redirect(url_for('dashboard'))
+
+
+
+@app.route('/logs')
+@login_required
+@manager_required
+def logs():
+    logs = LogEntry.query.order_by(LogEntry.timestamp.desc()).limit(200).all()
+    return render_template('logs.html', logs=logs)
+
+
+@app.route('/shifts')
+@login_required
+@manager_required
+def shift_list():
+    shifts = Shift.query.filter(Shift.closed_at.isnot(None)).order_by(Shift.closed_at.desc()).limit(200).all()
+    currency = app.config['CURRENCY_SYMBOL']
+    return render_template('shifts.html', shifts=shifts, currency=currency)
+
+
 
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
     return redirect(url_for('login'))
+
+@app.context_processor
+def inject_open_shift():
+    if current_user.is_authenticated and current_user.role == 'cashier':
+        open_shift = Shift.query.filter_by(cashier_id=current_user.id,
+                                           closed_at=None).first()
+    else:
+        open_shift = None
+    return dict(open_shift=open_shift)
+
+
+@app.context_processor
+def inject_shift_totals():
+    if current_user.is_authenticated and current_user.role == 'cashier':
+        shift = Shift.query.filter_by(cashier_id=current_user.id, closed_at=None).first()
+        if shift:
+            qty, rev = (
+                db.session.query(db.func.sum(Sale.qty_sold),
+                                 db.func.sum(Sale.qty_sold * Product.selling_price))
+                .join(Product)
+                .filter(Sale.date >= shift.opened_at.date())
+                .first()
+            )
+        else:
+            qty = rev = None
+    else:
+        shift = qty = rev = None
+    return dict(open_shift=shift, shift_qty=qty or 0, shift_rev=rev or 0.0)
+
 
 
 
