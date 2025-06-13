@@ -2,7 +2,7 @@ from flask import Flask, render_template, redirect, url_for, flash, request, abo
 from flask_login import LoginManager, login_user, login_required, current_user, logout_user
 from flask_wtf import CSRFProtect 
 from functools import wraps
-import bcrypt 
+import bcrypt, os
 from forms import LoginForm 
 
 from datetime import date, datetime
@@ -25,7 +25,20 @@ db.init_app(app)
 # tables once at startup, inside an application context.
 with app.app_context():
     db.create_all()
-# -------------------------------------------------------------------------
+
+
+
+    # --- one-time bootstrap ------------------------------------------------
+    if not User.query.filter_by(role='manager').first():
+        default_user = os.getenv('DEFAULT_ADMIN_USER', 'admin')
+        default_pass = os.getenv('DEFAULT_ADMIN_PASS', 'changeme123')
+
+        User.create(default_user, default_pass, 'manager')
+        app.logger.warning(
+            f'*** Created default manager '
+            f'username={default_user} password={default_pass} ***'
+        )
+    # ----------------------------------------------------------------------
 
 @app.route('/')
 def dashboard():
