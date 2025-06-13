@@ -12,6 +12,7 @@ Proceed only if you’re sure it’s different.</p>
 </ul>
 
 <form method="post" class="d-flex gap-2">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
   <button name="confirm" class="btn btn-success">Confirm</button>
   <button name="cancel" class="btn btn-secondary">Cancel</button>
 </form>
