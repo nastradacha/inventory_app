@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3>Edit Sale #{{ sale.id }}</h3>
+<form method="post" class="row g-3">
+  {{ form.hidden_tag() }}
+  <div class="col-md-6">
+    <label class="form-label">Product</label>
+    <input class="form-control" value="{{ sale.product.name }}" disabled>
+  </div>
+  <div class="col-md-6">
+    {{ form.qty_sold.label(class_='form-label') }}
+    {{ form.qty_sold(class_='form-control') }}
+  </div>
+  <div class="col-12"><button class="btn btn-success">Save</button></div>
+</form>
+{% endblock %}

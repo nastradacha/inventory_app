@@ -8,7 +8,7 @@ from forms import LoginForm
 from datetime import date, datetime
 from config import Config
 from models import db, Product, Sale, User
-from forms import AddStockForm, RecordSaleForm, NewUserForm, ResetPwdForm, EditProductForm
+from forms import AddStockForm, RecordSaleForm, NewUserForm, ResetPwdForm, EditProductForm, EditSaleForm
 from rapidfuzz import fuzz
 
 
@@ -269,6 +269,48 @@ def delete_product(pid):
     db.session.commit()
     flash('Product deleted', 'info')
     return redirect(url_for('products'))
+
+
+@app.route('/sales')
+@login_required
+@manager_required          # view permissions: manager only
+def sales_today():
+    today = date.today()
+    today_sales = (
+        db.session.query(Sale, Product)
+        .join(Product, Product.id == Sale.product_id)
+        .filter(Sale.date == today)
+        .order_by(Sale.id.desc())
+        .all()
+    )
+    return render_template('sales.html', today_sales=today_sales, today=today)
+
+
+@app.route('/sale/<int:sid>/edit', methods=['GET','POST'])
+@login_required
+@manager_required
+def edit_sale(sid):
+    sale = Sale.query.get_or_404(sid)
+    form = EditSaleForm(obj=sale)
+    if form.validate_on_submit():
+        diff = form.qty_sold.data - sale.qty_sold   # positive → increase sale qty
+        sale.qty_sold = form.qty_sold.data
+        sale.product.qty_at_hand -= diff            # keep inventory in sync
+        db.session.commit()
+        flash('Sale updated', 'success')
+        return redirect(url_for('sales_today'))
+    return render_template('edit_sale.html', form=form, sale=sale)
+
+@app.route('/sale/<int:sid>/void', methods=['POST'])
+@login_required
+@manager_required
+def void_sale(sid):
+    sale = Sale.query.get_or_404(sid)
+    sale.product.qty_at_hand += sale.qty_sold        # reverse stock count
+    db.session.delete(sale)
+    db.session.commit()
+    flash('Sale voided', 'info')
+    return redirect(url_for('sales_today'))
 
 
 

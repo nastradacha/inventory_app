@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3>Sales for {{ today.strftime('%d %b %Y') }}</h3>
+<table class="table table-sm"><thead><tr><th>#</th><th>Product</th><th class="text-end">Qty</th><th></th></tr></thead><tbody>
+{% for sale, prod in today_sales %}
+<tr>
+  <td>{{ sale.id }}</td>
+  <td>{{ prod.name }}</td>
+  <td class="text-end">{{ sale.qty_sold }}</td>
+  <td class="text-end">
+    <a class="btn btn-sm btn-primary" href="{{ url_for('edit_sale', sid=sale.id) }}">Edit</a>
+    <form action="{{ url_for('void_sale', sid=sale.id) }}" method="post" class="d-inline">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button class="btn btn-sm btn-danger" onclick="return confirm('Void sale #{{ sale.id }}?')">Void</button>
+    </form>
+  </td>
+</tr>
+{% endfor %}
+</tbody></table>
+{% endblock %}

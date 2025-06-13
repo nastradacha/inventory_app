@@ -38,3 +38,7 @@ class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     password = StringField('Password', validators=[DataRequired()])
     submit   = SubmitField('Sign In')
+
+class EditSaleForm(FlaskForm):
+    qty_sold = IntegerField('Quantity', validators=[NumberRange(min=1)])
+    submit   = SubmitField('Save')
