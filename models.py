@@ -15,6 +15,7 @@ class Product(db.Model):
     selling_price = db.Column(db.Float, nullable=False)
     initial_qty = db.Column(db.Integer, nullable=False)
     qty_at_hand = db.Column(db.Integer, nullable=False)
+    safety_stock  = db.Column(db.Integer, nullable=False, default=5)
 
     __table_args__ = (
         Index(

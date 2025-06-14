@@ -53,7 +53,7 @@ def dashboard():
     total_cost = sum(p.qty_at_hand * p.cost_price for p in products)
     total_value = sum(p.qty_at_hand * p.selling_price for p in products)
     total_profit = total_value - total_cost
-    low_stock = [p for p in products if p.qty_at_hand < 5]
+    low_stock = Product.query.filter(Product.qty_at_hand < Product.safety_stock).all()
     top_sales = (
         db.session.query(Product.name, db.func.sum(Sale.qty_sold).label('units'))
         .join(Sale)
@@ -104,6 +104,7 @@ def add_stock():
             p.cost_price = form.cost_price.data
             p.selling_price = form.selling_price.data
             p.expiry_date = form.expiry_date.data
+            p.safety_stock = form.safety_stock.data
         else:  # new product
             p = Product(
                 name=form.name.data,
@@ -113,6 +114,7 @@ def add_stock():
                 selling_price=form.selling_price.data,
                 initial_qty=form.quantity.data,
                 qty_at_hand=form.quantity.data,
+                safety_stock=form.safety_stock.data
             )
             db.session.add(p)
         db.session.commit()

@@ -16,6 +16,15 @@
     </select>
   </div>
 
+  <!-- Explicit safety_stock field
+  <div class="col-md-6">
+    {{ form.safety_stock.label(class_='form-label') }}
+    {{ form.safety_stock(class_='form-control') }}
+    {% if form.safety_stock.errors %}
+      <div class="text-danger small">{{ form.safety_stock.errors[0] }}</div>
+    {% endif %}
+  </div> -->
+
   <!-- Render the rest of the fields -->
   {% for field in form if field.name not in ['csrf_token', 'name', 'submit'] %}
     <div class="col-md-6">

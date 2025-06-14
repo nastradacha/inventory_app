@@ -10,6 +10,9 @@ class AddStockForm(FlaskForm):
     selling_price = FloatField('Selling price', validators=[NumberRange(min=0.01)])
     quantity = IntegerField('Quantity', validators=[NumberRange(min=1)])
     submit = SubmitField('Add / Restock')
+    safety_stock = IntegerField('Safety stock (re-order level)',
+                                default=5,
+                                validators=[NumberRange(min=0)])
 
 class RecordSaleForm(FlaskForm):
     product_id = SelectField('Product')  # choices filled in route
