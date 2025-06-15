@@ -13,6 +13,7 @@ Jinja2==3.1.6
 MarkupSafe==3.0.2
 packaging==25.0
 python-dotenv==1.1.0
+psycopg2-binary==2.9.10
 RapidFuzz==3.13.0
 SQLAlchemy==2.0.41
 typing_extensions==4.14.0
