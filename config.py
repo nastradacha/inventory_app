@@ -15,3 +15,9 @@ class Config:
     # Or on Render: add env var CURRENCY_SYMBOL=₦ etc.
     CURRENCY_SYMBOL = os.getenv("CURRENCY_SYMBOL", "GH₵")
     # --------------------------------------------------------------------
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        "pool_size": 5,        # each worker ≤ 5 → total 10 < 20-conn cap
+        "max_overflow": 2,
+        "pool_pre_ping": True,
+        "pool_recycle": 280,
+    }
