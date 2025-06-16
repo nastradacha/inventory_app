@@ -304,19 +304,36 @@ def delete_product(pid):
     return redirect(url_for('products'))
 
 
-@app.route('/sales')
-@login_required
-@manager_required          # view permissions: manager only
-def sales_today():
-    today = date.today()
-    today_sales = (
-        db.session.query(Sale, Product)
-        .join(Product, Product.id == Sale.product_id)
-        .filter(Sale.date == today)
-        .order_by(Sale.id.desc())
-        .all()
+@app.route('/sales', methods=['GET'])
+@login_required          # add @manager_required if only managers may browse
+def sales_list():
+    #
+    # ── 1. read ?date=YYYY-MM-DD, default = today ───────────────────────
+    #
+    sel = request.args.get('date') or date.today().isoformat()
+    try:
+        sel_date = datetime.strptime(sel, "%Y-%m-%d").date()
+    except ValueError:
+        abort(400)   # bad format
+
+    #
+    # ── 2. fetch that day’s sales + product info ────────────────────────
+    #
+    day_sales = (
+    db.session.query(Sale, Product)
+    .join(Product)
+    .filter(func.date(Sale.date) == sel_date)   # cast to DATE if Sale.date is DateTime
+    .order_by(Sale.id.desc())
+    .all()
     )
-    return render_template('sales.html', today_sales=today_sales, today=today)
+
+
+    return render_template(
+        "sales.html",
+        sales=day_sales,
+        sel_date=sel_date,
+        today=date.today()        # now Jinja can call today.isoformat()
+    )
 
 
 @app.route('/sale/<int:sid>/edit', methods=['GET','POST'])
@@ -336,14 +353,34 @@ def edit_sale(sid):
 
 @app.route('/sale/<int:sid>/void', methods=['POST'])
 @login_required
-@manager_required
 def void_sale(sid):
+    if 'confirm' not in request.form:
+        abort(400)  # safeguard against direct POST without confirmation
+
     sale = Sale.query.get_or_404(sid)
-    sale.product.qty_at_hand += sale.qty_sold        # reverse stock count
+    
+    # 1. Return stock to inventory
+    sale.product.qty_at_hand += sale.qty_sold
+    
+    # 2. Create audit log entry
+    db.session.add(LogEntry(
+        user=current_user.username,
+        action='void_sale',
+        details=f'{sale.qty_sold} × {sale.product.name} (sale #{sale.id})'
+    ))
+    
+    sale_date = sale.date  # save before deleting
+    # 3. Delete sale record
     db.session.delete(sale)
     db.session.commit()
-    flash('Sale voided', 'info')
-    return redirect(url_for('sales_today'))
+    
+    # 4. Cashier notification
+    if current_user.role == 'cashier':
+        flash('Sale voided – your manager has been notified.', 'info')
+    else:
+        flash('Sale voided.', 'success')
+    
+    return redirect(url_for('sales_list', date=sale_date.isoformat()))
 
 
 @app.route('/shift/open')

@@ -1,93 +1,95 @@
+{% set is_mgr = current_user.is_authenticated and current_user.role == 'manager' %}
+{% set is_cash = current_user.is_authenticated and current_user.role == 'cashier' %}
+
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Inventory App</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <!-- Custom styles -->
-    <link href="{{ url_for('static', filename='styles.css') }}" rel="stylesheet">
-  </head>
-  <body class="bg-light">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container-fluid">
-          <a class="navbar-brand" href="{{ url_for('dashboard') }}">Inventory</a>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                  aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>StoreTrack</title>
 
-          <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav me-auto">
-              <li class="nav-item"><a class="nav-link" href="{{ url_for('record_sale') }}">Record Sale</a></li>
-              {% if current_user.is_authenticated and current_user.role == 'manager' %}
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('add_stock') }}">Add Stock</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('products') }}">Products</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('users') }}">Users</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('sales_today') }}">Sales Today</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('shift_list') }}">Shifts</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('logs') }}">Audit</a></li>
-                <li class="nav-item dropdown">
-                  <a class="nav-link dropdown-toggle" href="#" id="reportsDD" role="button"
-                    data-bs-toggle="dropdown" aria-expanded="false">
-                    Reports
-                  </a>
-                  <ul class="dropdown-menu" aria-labelledby="reportsDD">
-                    <li><a class="dropdown-item" href="{{ url_for('sales_summary') }}">Sales&nbsp;Summary</a></li>
-                    <li><a class="dropdown-item" href="{{ url_for('inventory_report') }}">Inventory&nbsp;Valuation</a></li>
-                    {# future: category share, top/bottom, profit trend … #}
-                  </ul>
-                </li>
+  <!-- CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
+  <link href="{{ url_for('static', filename='styles.css') }}" rel="stylesheet">
+</head>
+<body class="bg-light">
 
-              {% endif %}
-              
-            </ul>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="{{ url_for('dashboard') }}">Inventory</a>
+    <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#nav" aria-label="Toggle">
+      <span class="navbar-toggler-icon"></span>
+    </button>
 
-            <!-- Cashier Shift Controls (RIGHT SIDE of Navbar) -->
-            {% if current_user.is_authenticated and current_user.role == 'cashier' %}
-              {% if open_shift %}
-                <span class="badge bg-info me-2">
-                  {{ shift_qty }} / {{ currency }}{{ '{:,.2f}'.format(shift_rev) }}
-                </span>
-                <form action="{{ url_for('close_shift') }}" method="post" class="d-inline">
-                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                  <button class="btn btn-sm btn-warning">Close Shift</button>
-                </form>
-              {% else %}
-                <a class="btn btn-sm btn-success" href="{{ url_for('open_shift') }}">Open Shift</a>
-              {% endif %}
-            {% endif %}
-            <!-- User Authentication -->
-            {% if current_user.is_authenticated %}
-              <span class="navbar-text me-2">{{ current_user.username }}</span>
-              <a class="nav-link d-inline" href="{{ url_for('logout') }}">Logout</a>
-            {% else %}
-              <a class="nav-link" href="{{ url_for('login') }}">Login</a>
-            {% endif %}
-          </div>
-        </div>
-      </nav>
+    <div class="collapse navbar-collapse" id="nav">
+      <!-- LEFT side -->
+      <ul class="navbar-nav me-auto">
 
-    <div class="container py-4">
-      {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-          {% for category, msg in messages %}
-            <div class="alert alert-{{ category }}">{{ msg }}</div>
-          {% endfor %}
+        <!-- links visible to ALL signed-in users -->
+        {% if current_user.is_authenticated %}
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('record_sale') }}">Record Sale</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('sales_list') }}">Sales</a></li>
         {% endif %}
-      {% endwith %}
 
-      {# single content block — do NOT duplicate! #}
-      {% block content %}{% endblock %}
+        {% if is_mgr %}
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('add_stock') }}">Add Stock</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('products') }}">Products</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('users') }}">Users</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('shift_list') }}">Shifts</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('logs') }}">Audit</a></li>
+
+          <!-- Reports dropdown -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="reportsDD" data-bs-toggle="dropdown">Reports</a>
+            <ul class="dropdown-menu" aria-labelledby="reportsDD">
+              <li><a class="dropdown-item" href="{{ url_for('sales_summary') }}">Sales&nbsp;Summary</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('inventory_report') }}">Inventory&nbsp;Valuation</a></li>
+            </ul>
+          </li>
+        {% endif %}
+      </ul>
+
+      <!-- RIGHT side -->
+      {% if is_cash %}
+        {% if open_shift %}
+          <span class="badge bg-info me-2">{{ shift_qty }} / {{ currency }}{{ '{:,.2f}'.format(shift_rev) }}</span>
+          <form action="{{ url_for('close_shift') }}" method="post" class="d-inline">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="btn btn-sm btn-warning">Close Shift</button>
+          </form>
+        {% else %}
+          <a class="btn btn-sm btn-success me-2" href="{{ url_for('open_shift') }}">Open Shift</a>
+        {% endif %}
+      {% endif %}
+
+      {% if current_user.is_authenticated %}
+        <span class="navbar-text me-2">{{ current_user.username }}</span>
+        <a class="nav-link d-inline" href="{{ url_for('logout') }}">Logout</a>
+      {% else %}
+        <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+      {% endif %}
     </div>
+  </div>
+</nav>
 
-    <!-- Bootstrap JS bundle (includes Popper) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{{ url_for('static', filename='barcode.js') }}"></script>
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    {% block scripts %}{% endblock %}
-  </body>
+<div class="container py-4">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, msg in messages %}
+        <div class="alert alert-{{ category }}">{{ msg }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  {% block content %}{% endblock %}
+</div>
+
+<!-- JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="{{ url_for('static', filename='barcode.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
 </html>

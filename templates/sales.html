@@ -1,20 +1,55 @@
 {% extends 'base.html' %}
 {% block content %}
-<h3>Sales for {{ today.strftime('%d %b %Y') }}</h3>
+<h3>Sales for {{ sel_date.strftime('%d %b %Y') }}</h3>
+
+<form method="get" class="row g-2 mb-3">
+  <div class="col-auto">
+    <input type="date"
+           name="date"
+           class="form-control"
+           value="{{ sel_date.isoformat() }}"
+           max="{{ today.isoformat() }}"
+           onchange="this.form.submit()">
+  </div>
+</form>
+
 <table class="table table-sm"><thead><tr><th>#</th><th>Product</th><th class="text-end">Qty</th><th></th></tr></thead><tbody>
-{% for sale, prod in today_sales %}
+{% for sale, prod in sales %}
 <tr>
   <td>{{ sale.id }}</td>
   <td>{{ prod.name }}</td>
   <td class="text-end">{{ sale.qty_sold }}</td>
   <td class="text-end">
     <a class="btn btn-sm btn-primary" href="{{ url_for('edit_sale', sid=sale.id) }}">Edit</a>
-    <form action="{{ url_for('void_sale', sid=sale.id) }}" method="post" class="d-inline">
-      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-      <button class="btn btn-sm btn-danger" onclick="return confirm('Void sale #{{ sale.id }}?')">Void</button>
-    </form>
+    <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#void{{ sale.id }}">Void</button>
   </td>
 </tr>
 {% endfor %}
 </tbody></table>
+
+{% for sale, prod in sales %}
+<!-- Modal for Void Confirmation -->
+<div class="modal fade" id="void{{ sale.id }}" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Confirm Void</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Return <strong>{{ sale.qty_sold }}</strong> × {{ prod.name }} to inventory?<br>
+        Action is logged.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <form action="{{ url_for('void_sale', sid=sale.id) }}" method="post" class="d-inline">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <input type="hidden" name="confirm" value="1">
+          <button type="submit" class="btn btn-danger">Void Now</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
 {% endblock %}
