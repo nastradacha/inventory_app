@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3>Sales Reports – {{ breakdown|title }} ({{ period|title }})</h3>
+
+<form class="row gy-2 gx-2 align-items-center mb-3">
+  <div class="col-auto">
+    <select name="period" class="form-select" onchange="this.form.submit()">
+      {% for opt in ['day','week','month','year'] %}
+      <option value="{{ opt }}" {{ 'selected' if opt==period }}>{{ opt|title }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-auto">
+    <select name="breakdown" class="form-select" onchange="this.form.submit()">
+      <option value="summary"  {{ 'selected' if breakdown=='summary'  }}>Summary</option>
+      <option value="category" {{ 'selected' if breakdown=='category' }}>By Category</option>
+      <option value="product"  {{ 'selected' if breakdown=='product'  }}>By Product</option>
+    </select>
+  </div>
+
+  <input type="hidden" name="export" id="export">
+  <div class="col-auto">
+    <button type="button" onclick="exportCSV()"  class="btn btn-outline-secondary">CSV</button>
+    <button type="button" onclick="exportPDF()"  class="btn btn-outline-secondary">PDF</button>
+  </div>
+</form>
+
+<script>
+function exportCSV(){ document.getElementById('export').value='csv';  document.forms[0].submit(); }
+function exportPDF(){ document.getElementById('export').value='pdf';  document.forms[0].submit(); }
+</script>
+
+{% if breakdown == 'summary' %}
+<div class="row text-center mb-4">
+  {% set total_rev  = data|sum(attribute='rev') %}
+  {% set total_cost = data|sum(attribute='cost') %}
+  {% set total_gp   = total_rev - total_cost %}
+  <div class="col-sm-4"><div class="card p-3"><h5>Revenue</h5><h3>{{ currency }}{{ '%0.2f' % total_rev }}</h3></div></div>
+  <div class="col-sm-4"><div class="card p-3"><h5>Cost</h5><h3>{{ currency }}{{ '%0.2f' % total_cost }}</h3></div></div>
+  <div class="col-sm-4"><div class="card p-3"><h5>Gross Profit</h5><h3>{{ currency }}{{ '%0.2f' % total_gp }}</h3></div></div>
+</div>
+
+<canvas id="salesChart" height="120"></canvas>
+<table class="table table-sm mt-4">
+  <thead><tr><th>Period</th><th class="text-end">Qty</th><th class="text-end">Revenue</th><th class="text-end">Profit</th></tr></thead>
+  <tbody>
+  {% for d in data %}
+    <tr>
+      <td>{{ d.bucket }}</td>
+      <td class="text-end">{{ d.qty }}</td>
+      <td class="text-end">{{ currency }}{{ '%0.2f' % d.rev }}</td>
+      <td class="text-end">{{ currency }}{{ '%0.2f' % d.gp }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+{% elif breakdown == 'category' %}
+<canvas id="pie"></canvas>
+<table class="table table-sm mt-3">
+  <thead><tr><th>Category</th><th class="text-end">Revenue</th></tr></thead>
+  <tbody>
+    {% for cat, rev in rows %}
+    <tr><td>{{ cat or '—' }}</td><td class="text-end">{{ currency }}{{ '%0.2f' % rev }}</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% elif breakdown == 'product' %}
+<canvas id="bar"></canvas>
+<table class="table table-sm mt-3">
+  <thead><tr><th>Product</th><th class="text-end">Qty</th><th class="text-end">Revenue</th></tr></thead>
+  <tbody>
+    {% for name, qty, rev in rows %}
+    <tr><td>{{ name }}</td><td class="text-end">{{ qty }}</td><td class="text-end">{{ currency }}{{ '%0.2f' % rev }}</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+{% if breakdown == 'summary' %}
+<script>
+const labels = {{ data|map(attribute='bucket')|list|tojson }};
+const revenue = {{ data|map(attribute='rev')|list|tojson }};
+const profit  = {{ data|map(attribute='gp')|list|tojson }};
+
+new Chart(document.getElementById('salesChart'), {
+  type: 'line',
+  data: {
+    labels: labels,
+    datasets: [
+      { label: 'Revenue', data: revenue, tension: 0.25 },
+      { label: 'Profit',  data: profit,  tension: 0.25 }
+    ]
+  },
+  options: {
+    scales: { y: { beginAtZero: true } }
+  }
+});
+</script>
+{% elif breakdown == 'category' %}
+<script>
+new Chart(document.getElementById('pie'), {
+  type: 'pie',
+  data: { 
+    labels: {{ chart_labels|tojson }},
+    datasets: [{ data: {{ chart_values|tojson }} }]
+  }
+});
+</script>
+{% elif breakdown == 'product' %}
+<script>
+new Chart(document.getElementById('bar'), {
+  type: 'bar',
+  data: { 
+    labels: {{ chart_labels|tojson }},
+    datasets: [{ data: {{ chart_values|tojson }} }]
+  },
+  options: { indexAxis: 'y' }
+});
+</script>
+{% endif %}
+{% endblock %}

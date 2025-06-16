@@ -21,6 +21,7 @@
 
           <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto">
+              <li class="nav-item"><a class="nav-link" href="{{ url_for('record_sale') }}">Record Sale</a></li>
               {% if current_user.is_authenticated and current_user.role == 'manager' %}
                 <li class="nav-item"><a class="nav-link" href="{{ url_for('add_stock') }}">Add Stock</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ url_for('products') }}">Products</a></li>
@@ -28,8 +29,20 @@
                 <li class="nav-item"><a class="nav-link" href="{{ url_for('sales_today') }}">Sales Today</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ url_for('shift_list') }}">Shifts</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ url_for('logs') }}">Audit</a></li>
+                <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" href="#" id="reportsDD" role="button"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    Reports
+                  </a>
+                  <ul class="dropdown-menu" aria-labelledby="reportsDD">
+                    <li><a class="dropdown-item" href="{{ url_for('sales_summary') }}">Sales&nbsp;Summary</a></li>
+                    <li><a class="dropdown-item" href="{{ url_for('inventory_report') }}">Inventory&nbsp;Valuation</a></li>
+                    {# future: category share, top/bottom, profit trend … #}
+                  </ul>
+                </li>
+
               {% endif %}
-              <li class="nav-item"><a class="nav-link" href="{{ url_for('record_sale') }}">Record Sale</a></li>
+              
             </ul>
 
             <!-- Cashier Shift Controls (RIGHT SIDE of Navbar) -->

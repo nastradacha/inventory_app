@@ -1,0 +1,507 @@
+Category,Product Name,Expiry,Initial Quantity,Quantity at Hand,Cost Price,Total Cost Price,Selling Price,Total Selling Price,Profit per Item,Total Profit,LowStockAlert,ExpiryAlert
+Foods,Magico ss,12/12/2025,4,4,6,24,7,28,1,4,LOW,OKAY
+Foods,Flash soap,12/13/2025,7,7,6.5,45.5,7,49,0.5,3.5,OKAY,OKAY
+Foods,Tilapia,12/14/2025,23,23,46,1058,60,1380,14,322,OKAY,OKAY
+Foods,Soklin ms,12/15/2025,14,10,2.9,29,3,30,0.1,1,OKAY,OKAY
+Foods,Tiana sardine,12/16/2025,1,1,8,8,9,9,1,1,LOW,OKAY
+Foods,Top choco bowl ss,12/17/2025,3,3,11,33,12,36,1,3,LOW,OKAY
+Foods,Top choco bowl bs,12/18/2025,0,0,25,0,26,0,1,0,LOW,OKAY
+Foods,Magarine bowl ms,12/19/2025,0,0,13,0,14,0,1,0,LOW,OKAY
+Foods,Ginny sardine,12/20/2025,5,5,10,50,11,55,1,5,OKAY,OKAY
+Foods,Lala,12/21/2025,2,2,8,16,8.5,17,0.5,1,LOW,OKAY
+Foods,Ice cool sachet,12/22/2025,4,56,0.27,15.12,0.5,28,0.23,12.88,OKAY,OKAY
+Foods,Scissors,12/23/2025,3,3,3.83,11.49,6,18,2.17,6.51,LOW,OKAY
+Foods,Padlock s/s,12/24/2025,6,6,7.92,47.52,9,54,1.08,6.48,OKAY,OKAY
+Foods,Padlock b/s,12/25/2025,9,9,8.75,78.75,10,90,1.25,11.25,OKAY,OKAY
+Foods,Torch light b/s,12/26/2025,5,5,9.16,45.8,11,55,1.84,9.2,OKAY,OKAY
+Foods,Torchlight s/s,12/27/2025,4,4,5.33,21.32,8,32,2.67,10.68,LOW,OKAY
+Foods,Design balloon,12/28/2025,28,28,0.4,11.2,1,28,0.6,16.8,OKAY,OKAY
+Foods,Normal balloon,12/29/2025,500,500,0.4,200,1.5,750,1.1,550,OKAY,OKAY
+Foods,Paper balloon,12/30/2025,282,282,0.24,67.68,1.5,423,1.26,355.32,OKAY,OKAY
+Foods,Towel b/s,12/31/2025,2,2,30,60,35,70,5,10,LOW,OKAY
+Foods,Towel m/s,1/1/2026,2,2,15,30,20,40,5,10,LOW,OKAY
+Foods,Sponge hard,1/2/2026,2,2,40,80,42,84,2,4,LOW,OKAY
+Foods,Sponge soft,1/3/2026,1,1,30,30,32,32,2,2,LOW,OKAY
+Foods,Cowbell coffee,1/4/2026,1,1,3.6,3.6,4.5,4.5,0.9,0.9,LOW,OKAY
+Foods,Cowbell strawberry,1/5/2026,9,8,3.8,30.4,4.5,36,0.7,5.6,OKAY,OKAY
+Foods,Cowbell moka,1/6/2026,25,25,3.8,95,4.5,112.5,0.7,17.5,OKAY,OKAY
+Foods,Cadbury choco,1/7/2026,7,6,3,18,3.5,21,0.5,3,OKAY,OKAY
+Foods,This way,1/8/2026,20,19,3.5,66.5,4.5,85.5,1,19,OKAY,OKAY
+Foods,Milo all in one,1/9/2026,25,24,3.8,91.2,4.5,108,0.7,16.8,OKAY,OKAY
+Foods,Kivo Gari b/s,1/10/2026,25,20,4,80,5,100,1,20,OKAY,OKAY
+Foods,Non dairy ss,1/11/2026,30,28,0.85,23.8,1.5,42,0.65,18.2,OKAY,OKAY
+Foods,Non dairy bs,1/12/2026,27,26,1.4,36.4,2,52,0.6,15.6,OKAY,OKAY
+Foods,Miksi choco,1/13/2026,15,11,3.1,34.1,4,44,0.9,9.9,OKAY,OKAY
+Foods,Milo s/s,1/14/2026,8,2,2.1,4.2,2.5,5,0.4,0.8,LOW,OKAY
+Foods,Nescafe sachet s/s,1/15/2026,35,27,1.3,35.1,1.5,40.5,0.2,5.4,OKAY,OKAY
+Foods,Ideal sachet,1/16/2026,0,0,2.7,0,3,0,0.3,0,LOW,OKAY
+Foods,Kivo pepper b/s,1/17/2026,8,8,4,32,4.5,36,0.5,4,OKAY,OKAY
+Foods,Yumvita,1/18/2026,0,0,5,0,5.5,0,0.5,0,LOW,OKAY
+Foods,Nido b/s,1/19/2026,26,22,3.7,81.4,4.5,99,0.8,17.6,OKAY,OKAY
+Foods,Nido s/s,1/20/2026,83,77,2.2,169.4,2.5,192.5,0.3,23.1,OKAY,OKAY
+Foods,Cerelac,1/21/2026,34,13,5.6,72.8,6,78,0.4,5.2,OKAY,OKAY
+Foods,Nescafe 3 in 1,1/22/2026,7,6,3.5,21,4.5,27,1,6,OKAY,OKAY
+Foods,Cowbell b/s,1/23/2026,19,17,3,51,4,68,1,17,OKAY,OKAY
+Foods,Cowbell s/s,1/24/2026,4,4,1.8,7.2,2,8,0.2,0.8,LOW,OKAY
+Foods,Remie spice,1/25/2026,19,17,1,17,1.5,25.5,0.5,8.5,OKAY,OKAY
+Foods,D33d3w,1/27/2026,15,14,1,14,1.5,21,0.5,7,OKAY,OKAY
+Foods,Onga spice,1/28/2026,22,22,1,22,1.5,33,0.5,11,OKAY,OKAY
+Foods,41Kivo ginger and garlic,1/29/2026,16,16,1,16,1.5,24,0.5,8,OKAY,OKAY
+Foods,Curry powder,1/30/2026,14,14,0.5,7,1,14,0.5,7,OKAY,OKAY
+Foods,Kivo pepper s/s,1/31/2026,283,260,0.5,130,1.5,390,1,260,OKAY,OKAY
+Foods,Beans,2/1/2026,2,2,7,14,10,20,3,6,LOW,OKAY
+Foods,Hard salt,2/2/2026,5,5,1.39,6.95,2,10,0.61,3.05,OKAY,OKAY
+Foods,Maggi cube,2/3/2026,47,47,0.7,32.9,1,47,0.3,14.1,OKAY,OKAY
+Foods,Shortbread,2/4/2026,60,53,3.5,185.5,4,212,0.5,26.5,OKAY,OKAY
+Foods,Gari 5.00,2/5/2026,1,1,4,4,5,5,1,1,LOW,OKAY
+Foods,Groundnut,2/6/2026,2,2,1,2,1,2,0,0,LOW,OKAY
+Foods,Sugar 4.00,2/7/2026,5,-2,2,-4,4,-8,2,-4,LOW,OKAY
+Foods,Sugar 8.00,2/8/2026,11,9,4,36,8,72,4,36,OKAY,OKAY
+Foods,Sugar 2.00,2/9/2026,4,4,1,4,2,8,1,4,LOW,OKAY
+Foods,Pepsodent sachet,2/10/2026,15,15,1,15,2,30,1,15,OKAY,OKAY
+Foods,Mentos toffee,2/11/2026,13,13,0.5,6.5,0.6,7.8,0.1,1.3,OKAY,OKAY
+Foods,Flash,2/12/2026,42,42,0.5,21,1,42,0.5,21,OKAY,OKAY
+Foods,Hipo pop toffee,2/13/2026,33,32,0.5,16,1,32,0.5,16,OKAY,OKAY
+Foods,Kopiko,2/14/2026,0,0,0.36,0,0.5,0,0.14,0,LOW,OKAY
+Foods,Kis,2/15/2026,50,43,0.45,19.35,0.5,21.5,0.05,2.15,OKAY,OKAY
+Foods,Ox,2/16/2026,1,1,0.3,0.3,0.5,0.5,0.2,0.2,LOW,OKAY
+Foods,Superior mint,2/17/2026,38,30,1.1,33,1.5,45,0.4,12,OKAY,OKAY
+Foods,Dr milk,2/18/2026,83,76,0.26,19.76,0.5,38,0.24,18.24,OKAY,OKAY
+Foods,Ibon fruity,2/19/2026,95,95,0.26,24.7,0.5,47.5,0.24,22.8,OKAY,OKAY
+Foods,Jess chocolate,2/20/2026,14,9,0.64,5.76,1,9,0.36,3.24,OKAY,OKAY
+Foods,Orient,2/21/2026,3,3,0.56,1.68,1.5,4.5,0.94,2.82,LOW,OKAY
+Foods,London,2/22/2026,1,0,4.5,0,5,0,0.5,0,LOW,OKAY
+Foods,Nutri snax b/s,2/23/2026,6,6,4.83,28.98,5.5,33,0.67,4.02,OKAY,OKAY
+Foods,Ginger biscuit s/s,2/24/2026,0,0,2.17,0,2.5,0,0.33,0,LOW,OKAY
+Foods,Soda biscuit,2/25/2026,8,8,1.67,13.36,2.5,20,0.83,6.64,OKAY,OKAY
+Foods,Milk cracker b/s,2/26/2026,26,26,2,52,2.5,65,0.5,13,OKAY,OKAY
+Foods,Perk s/s,2/27/2026,34,34,0.83,28.22,1.5,51,0.67,22.78,OKAY,OKAY
+Foods,Breakfast,2/28/2026,121,120,0.92,110.4,1.5,180,0.58,69.6,OKAY,OKAY
+Foods,Ginger magic,3/1/2026,1,1,0.83,0.83,1.5,1.5,0.67,0.67,LOW,OKAY
+Foods,Nutri s/s,3/2/2026,1,1,0.83,0.83,1.5,1.5,0.67,0.67,LOW,OKAY
+Foods,King cracker s/s,3/3/2026,15,15,0.83,12.45,1.5,22.5,0.67,10.05,OKAY,OKAY
+Foods,Simply good s/s,3/4/2026,29,29,0.83,24.07,1.8,52.2,0.97,28.13,OKAY,OKAY
+Foods,Milk cracker s/s,3/5/2026,81,73,0.83,60.59,1,73,0.17,12.41,OKAY,OKAY
+Foods,Milk n malt,3/6/2026,0,0,0.83,0,1,0,0.17,0,LOW,OKAY
+Foods,Milk power,3/7/2026,47,45,0.83,37.35,1,45,0.17,7.65,OKAY,OKAY
+Foods,Malty,3/8/2026,71,71,0.83,58.93,1,71,0.17,12.07,OKAY,OKAY
+Foods,King cracker b/s,3/9/2026,26,26,1.73,44.98,2.5,65,0.77,20.02,OKAY,OKAY
+Foods,Simply good bs,3/10/2026,5,5,1.73,8.65,2.5,12.5,0.77,3.85,OKAY,OKAY
+Foods,Jack n jill,3/11/2026,0,0,3.06,0,3.5,0,0.44,0,LOW,OKAY
+Foods,Snappy,3/12/2026,8,6,0.76,4.56,1.5,9,0.74,4.44,OKAY,OKAY
+Foods,Bourbon,3/13/2026,0,0,2.08,0,2.5,0,0.42,0,LOW,OKAY
+Foods,Ginger biscuit s/s,3/14/2026,1,1,3.5,3.5,4,4,0.5,0.5,LOW,OKAY
+Foods,Gem biscuit,3/15/2026,1,1,1,1,1.5,1.5,0.5,0.5,LOW,OKAY
+Foods,Lovan,3/17/2026,7,7,0.83,5.81,1.5,10.5,0.67,4.69,OKAY,OKAY
+Foods,Mentos ice,3/18/2026,13,12,6.34,76.08,7.5,90,1.16,13.92,OKAY,OKAY
+Foods,Mentos mint,3/19/2026,4,4,2,8,2.5,10,0.5,2,LOW,OKAY
+Foods,Watch toffee,3/20/2026,77,77,1.27,97.79,1.5,115.5,0.23,17.71,OKAY,OKAY
+Foods,Trumpet,3/21/2026,9,9,2,18,2.5,22.5,0.5,4.5,OKAY,OKAY
+Foods,Big bom,3/22/2026,12,10,1.05,10.5,1.5,15,0.45,4.5,OKAY,OKAY
+Foods,Big ball,3/23/2026,17,17,0.4,6.8,0.5,8.5,0.1,1.7,OKAY,OKAY
+Foods,Rikrak,3/24/2026,3,3,0.83,2.49,1.5,4.5,0.67,2.01,LOW,OKAY
+Foods,Gari 3 cedis,3/25/2026,1,1,2,2,2,2,0,0,LOW,OKAY
+Foods,Anapuna bs,3/26/2026,2,2,10,20,11,22,1,2,LOW,OKAY
+Foods,Anapuna ms,3/27/2026,0,0,5,0,6,0,1,0,LOW,OKAY
+Foods,Anapuna ss,3/28/2026,0,0,2.5,0,3,0,0.5,0,LOW,OKAY
+Foods,Kivo pepper ss,3/29/2026,287,286,0.5,143,1.5,429,1,286,OKAY,OKAY
+Foods,Kivo curry,3/30/2026,202,202,1,202,1.5,303,0.5,101,OKAY,OKAY
+Foods,Bulb bs,3/31/2026,2,2,35,70,40,80,5,10,LOW,OKAY
+Foods,Bulb ms,4/1/2026,1,1,20,20,22,22,2,2,LOW,OKAY
+Foods,Bulb ss,4/2/2026,13,13,5,65,6,78,1,13,OKAY,OKAY
+Foods,Led torch,4/3/2026,3,3,10,30,12,36,2,6,LOW,OKAY
+Foods,Exercise book,4/4/2026,7,6,3.1,18.6,4,24,0.9,5.4,OKAY,OKAY
+Foods,Matches,4/5/2026,161,151,0.24,36.24,0.5,75.5,0.26,39.26,OKAY,OKAY
+Foods,Normal pencil,4/6/2026,144,144,0.33,47.52,0.7,100.8,0.37,53.28,OKAY,OKAY
+Foods,Maths set,4/7/2026,12,12,10.83,129.96,12,144,1.17,14.04,OKAY,OKAY
+Foods,Nataraj maths set,4/8/2026,5,5,30,150,32,160,2,10,OKAY,OKAY
+Foods,Bic pen,4/9/2026,80,80,1.6,128,3,240,1.4,112,OKAY,OKAY
+Foods,Nataraj pencil,4/10/2026,88,88,1.04,91.52,1.5,132,0.46,40.48,OKAY,OKAY
+Foods,Heaven coil,4/11/2026,14,12,1.45,17.4,2,24,0.55,6.6,OKAY,OKAY
+Foods,Out coil,4/12/2026,39,39,0.9,35.1,1.2,46.8,0.3,11.7,OKAY,OKAY
+Foods,Ange coil,4/13/2026,33,33,1.5,49.5,1.8,59.4,0.3,9.9,OKAY,OKAY
+Foods,Quickshine,4/14/2026,7,7,5.83,40.81,7,49,1.17,8.19,OKAY,OKAY
+Foods,Aaa battery,4/15/2026,21,21,0.67,14.07,1,21,0.33,6.93,OKAY,OKAY
+Foods,Racer blade,4/16/2026,117,112,0.25,28,0.5,56,0.25,28,OKAY,OKAY
+Foods,Topaz,4/17/2026,100,100,0.25,25,0.5,50,0.25,25,OKAY,OKAY
+Foods,Crown blade,4/18/2026,2,2,0.3,0.6,0.5,1,0.2,0.4,LOW,OKAY
+Foods,Bb cocktail,4/19/2026,15,14,9.58,134.12,11,154,1.42,19.88,OKAY,OKAY
+Foods,Can malt,4/20/2026,1,25,9.79,244.75,12,300,2.21,55.25,OKAY,OKAY
+Foods,Storm bs,4/21/2026,0,0,5.42,0,6,0,0.58,0,LOW,OKAY
+Foods,Rush,4/22/2026,5,4,3.67,14.68,5,20,1.33,5.32,LOW,OKAY
+Foods,Voltic ss,4/23/2026,21,21,2.3,48.3,2.5,52.5,0.2,4.2,OKAY,OKAY
+Foods,Pukka,4/24/2026,32,30,2.62,78.6,3.5,105,0.88,26.4,OKAY,OKAY
+Foods,Kaesar,4/25/2026,46,80,2.25,180,3,240,0.75,60,OKAY,OKAY
+Foods,5 star,4/26/2026,1,1,3.5,3.5,5,5,1.5,1.5,LOW,OKAY
+Foods,Coke 1 litter,4/27/2026,0,0,21.33,0,24,0,2.67,0,LOW,OKAY
+Foods,Voltic bs,4/28/2026,21,21,4.5,94.5,5,105,0.5,10.5,OKAY,OKAY
+Foods,Verna ms,4/29/2026,3,3,1.6,4.8,3,9,1.4,4.2,LOW,OKAY
+Foods,Verna ss,4/30/2026,202,186,1.56,290.16,2.5,465,0.94,174.84,OKAY,OKAY
+Foods,Awake ss,5/1/2026,56,56,1.75,98,2.5,140,0.75,42,OKAY,OKAY
+Foods,Perla,5/2/2026,1,0,1.13,0,2.5,0,1.37,0,LOW,OKAY
+Foods,Bel aqua ss,5/3/2026,103,101,1.8,181.8,2.5,252.5,0.7,70.7,OKAY,OKAY
+Foods,Bel active,5/5/2026,1,0,3.75,0,4.5,0,0.75,0,LOW,OKAY
+Foods,Lucozade,5/6/2026,14,14,16.33,228.62,17,238,0.67,9.38,OKAY,OKAY
+Foods,U fresh choco,5/7/2026,7,7,4.53,31.71,6,42,1.47,10.29,OKAY,OKAY
+Foods,7 star,5/8/2026,32,32,2.21,70.72,3,96,0.79,25.28,OKAY,OKAY
+Foods,Fruity,5/9/2026,73,73,2.04,148.92,2.5,182.5,0.46,33.58,OKAY,OKAY
+Foods,Coke ss,5/10/2026,16,39,4.83,188.37,6,234,1.17,45.63,OKAY,OKAY
+Foods,Bel cola,5/11/2026,19,43,2.63,113.09,4,172,1.37,58.91,OKAY,OKAY
+Foods,Fanta ss,5/12/2026,1,24,5,120,6,144,1,24,OKAY,OKAY
+Foods,Kalyppo,5/13/2026,63,58,4.75,275.5,5,290,0.25,14.5,OKAY,OKAY
+Foods,Fresh soya,5/14/2026,0,0,4.53,0,6,0,1.47,0,LOW,OKAY
+Foods,Beta malt,5/15/2026,6,4,7.92,31.68,9,36,1.08,4.32,LOW,OKAY
+Foods,Bel aqua ms,5/16/2026,167,165,2.33,384.45,3,495,0.67,110.55,OKAY,OKAY
+Foods,Ufresh apple,5/17/2026,15,14,2.37,33.18,3,42,0.63,8.82,OKAY,OKAY
+Foods,Sobolo,5/18/2026,21,20,4,80,5,100,1,20,OKAY,OKAY
+Foods,Bigoo,5/19/2026,9,45,2.3,103.5,3,135,0.7,31.5,OKAY,OKAY
+Foods,Melo,5/20/2026,16,12,1.5,18,2.5,30,1,12,OKAY,OKAY
+Foods,Bel classic,5/21/2026,6,2,3.17,6.34,4,8,0.83,1.66,LOW,OKAY
+Foods,Baron t roll,5/22/2026,93,91,2.29,208.39,3,273,0.71,64.61,OKAY,OKAY
+Foods,Eco green,5/23/2026,50,48,3,144,3.5,168,0.5,24,OKAY,OKAY
+Foods,Pride,5/24/2026,5,3,2.3,6.9,3,9,0.7,2.1,LOW,OKAY
+Foods,166Softcare diapers ms,5/25/2026,77,75,2.16,162,2.5,187.5,0.34,25.5,OKAY,OKAY
+Foods,167 Softcare diapers ls,5/26/2026,94,68,2.16,146.88,2.5,170,0.34,23.12,OKAY,OKAY
+Foods,Softcare pad,5/27/2026,6,5,12,60,15,75,3,15,OKAY,OKAY
+Foods,Yazz pad,5/28/2026,10,9,14,126,17,153,3,27,OKAY,OKAY
+Foods,Panty linear,5/29/2026,3,3,10,30,11,33,1,3,LOW,OKAY
+Foods,Easy on,5/30/2026,7,7,20,140,21,147,1,7,OKAY,OKAY
+Foods,Sasso spray,5/31/2026,1,1,40,40,42,42,2,2,LOW,OKAY
+Foods,Out 300ml,6/1/2026,0,0,26,0,27,0,1,0,LOW,OKAY
+Foods,Out 400ml,6/2/2026,1,1,48,48,49,49,1,1,LOW,OKAY
+Foods,Fatala 400ml,6/3/2026,0,0,29,0,30,0,1,0,LOW,OKAY
+Foods,Fatala 600ml,6/4/2026,4,4,35,140,37,148,2,8,LOW,OKAY
+Foods,Heaven ss,6/5/2026,2,2,26,52,27,54,1,2,LOW,OKAY
+Foods,Heaven bs,6/6/2026,0,0,48,0,50,0,2,0,LOW,OKAY
+Foods,Out bs,6/7/2026,2,2,48,96,49,98,1,2,LOW,OKAY
+Foods,Challenge bs,6/8/2026,2,2,48,96,50,100,2,4,LOW,OKAY
+Foods,Morning fresh liquid soap,6/9/2026,2,2,20,40,21,42,1,2,LOW,OKAY
+Foods,Ketchup,6/10/2026,2,1,14,14,16,16,2,2,LOW,OKAY
+Foods,Obaapapa oil ms,6/11/2026,2,2,22,44,23,46,1,2,LOW,OKAY
+Foods,Obaapapa oil ss,6/12/2026,8,8,13,104,14,112,1,8,OKAY,OKAY
+Foods,Cube sugar,6/13/2026,6,6,18,108,20,120,2,12,OKAY,OKAY
+Foods,Cerelac tin,6/14/2026,3,3,38,114,40,120,2,6,LOW,OKAY
+Foods,Fortin oat,6/15/2026,5,5,16.5,82.5,20,100,3.5,17.5,OKAY,OKAY
+Foods,Good morning oat,6/16/2026,3,3,28,84,30,90,2,6,LOW,OKAY
+Foods,Lele 5kg,6/17/2026,2,2,145,290,147,294,2,4,LOW,OKAY
+Foods,Chanel 5kg,6/18/2026,1,1,95,95,97,97,2,2,LOW,OKAY
+Foods,Blues 5kg,6/19/2026,3,3,90,270,91,273,1,3,LOW,OKAY
+Foods,Royal aroma 5kg,6/20/2026,1,1,108,108,120,120,12,12,LOW,OKAY
+Foods,Abena 4.5kg,6/21/2026,4,3,101,303,103,309,2,6,LOW,OKAY
+Foods,Frytol oil 4.5l,6/23/2026,2,2,205,410,210,420,5,10,LOW,OKAY
+Foods,Jumbo towel,6/24/2026,13,13,18.33,238.29,20,260,1.67,21.71,OKAY,OKAY
+Foods,Takeaway pack,6/25/2026,100,100,0.32,32,0.5,50,0.18,18,OKAY,OKAY
+Foods,Table tissue,6/26/2026,7,7,6.25,43.75,7,49,0.75,5.25,OKAY,OKAY
+Foods,Royal aroma 1kg,6/27/2026,3,3,23.75,71.25,25,75,1.25,3.75,LOW,OKAY
+Foods,Lele 1kg,6/28/2026,5,5,30,150,34,170,4,20,OKAY,OKAY
+Foods,Gino 1kg,6/29/2026,4,3,39,117,42,126,3,9,LOW,OKAY
+Foods,Dubai 1kg,6/30/2026,35,35,19.5,682.5,21,735,1.5,52.5,OKAY,OKAY
+Foods,Dubai 5kg,7/1/2026,1,1,94,94,95,95,1,1,LOW,OKAY
+Foods,Peacock 1kg,7/2/2026,3,3,33,99,34,102,1,3,LOW,OKAY
+Foods,Chelsea 1kg,7/3/2026,9,9,18.5,166.5,19.5,175.5,1,9,OKAY,OKAY
+Foods,Creed 1.5,7/4/2026,10,10,18.5,185,19.5,195,1,10,OKAY,OKAY
+Foods,K75 1kg,7/5/2026,12,11,18.75,206.25,21,231,2.25,24.75,OKAY,OKAY
+Foods,Abena 1kg,7/6/2026,19,19,22.5,427.5,23.5,446.5,1,19,OKAY,OKAY
+Foods,Chanel 1kg,7/7/2026,6,6,18.75,112.5,19.5,117,0.75,4.5,OKAY,OKAY
+Foods,Oba 1kg,7/8/2026,17,17,18.75,318.75,21,357,2.25,38.25,OKAY,OKAY
+Foods,Indomie ss,7/9/2026,52,52,4.25,221,4.5,234,0.25,13,OKAY,OKAY
+Foods,Super pack,7/10/2026,34,33,6.5,214.5,7,231,0.5,16.5,OKAY,OKAY
+Foods,Hungryman,7/11/2026,3,3,9.2,27.6,11,33,1.8,5.4,LOW,OKAY
+Foods,Sister mackerel bs,7/12/2026,3,3,15.43,46.29,17,51,1.57,4.71,LOW,OKAY
+Foods,215 Ena pa mackerel bs,7/13/2026,3,3,24,72,25,75,1,3,LOW,OKAY
+Foods,Tasty Tom tin ss,7/14/2026,0,0,8.33,0,9.5,0,1.17,0,LOW,OKAY
+Foods,Tasty Tom tin bs,7/15/2026,0,0,12.92,0,14,0,1.08,0,LOW,OKAY
+Foods,African queen,7/16/2026,3,3,5,15,6,18,1,3,LOW,OKAY
+Foods,219 Ena pa mackerel ss,7/17/2026,5,5,8.5,42.5,9.5,47.5,1,5,OKAY,OKAY
+Foods,220Obaapa mackerel ss,7/18/2026,10,10,8,80,9.5,95,1.5,15,OKAY,OKAY
+Foods,Belma sardine,7/19/2026,1,1,12,12,12.5,12.5,0.5,0.5,LOW,OKAY
+Foods,Titus,7/20/2026,2,0,12,0,13,0,1,0,LOW,OKAY
+Foods,Obaapa sardine,7/21/2026,7,7,12,84,12.5,87.5,0.5,3.5,OKAY,OKAY
+Foods,Starkist,7/22/2026,3,3,27,81,28,84,1,3,LOW,OKAY
+Foods,Lele Tuna ﬂakes ss,7/23/2026,0,0,8,0,10,0,2,0,LOW,OKAY
+Foods,Lele tuna ﬂakes bs,7/24/2026,1,1,18,18,19,19,1,1,LOW,OKAY
+Foods,Exeter,7/25/2026,0,0,52,0,53,0,1,0,LOW,OKAY
+Foods,Tasty Tom sachet mini,7/26/2026,1,0,2.4,0,3,0,0.6,0,LOW,OKAY
+Foods,Jollof mix ss,7/27/2026,10,10,3,30,3.5,35,0.5,5,OKAY,OKAY
+Foods,Gino sachet bs,7/28/2026,1,1,29,29,30,30,1,1,LOW,OKAY
+Foods,Gino sachet ms,7/29/2026,9,9,14.5,130.5,15,135,0.5,4.5,OKAY,OKAY
+Foods,232Tasty Tom sachet ss,7/30/2026,1,1,8.33,8.33,9.5,9.5,1.17,1.17,LOW,OKAY
+Foods,Frytol sachet,7/31/2026,1,1,40,40,42,42,2,2,LOW,OKAY
+Foods,Oba spaghetti bs,8/1/2026,5,3,7.5,22.5,9,27,1.5,4.5,LOW,OKAY
+Foods,Oba spaghetti ss,8/2/2026,1,1,3.9,3.9,5.5,5.5,1.6,1.6,LOW,OKAY
+Foods,Bama mayonnaise,8/3/2026,2,2,18,36,19,38,1,2,LOW,OKAY
+Foods,Carnation tin,8/4/2026,17,15,9.5,142.5,10,150,0.5,7.5,OKAY,OKAY
+Foods,Ideal tin,8/5/2026,20,17,9.58,162.86,11,187,1.42,24.14,OKAY,OKAY
+Foods,Popular,8/6/2026,20,18,7.08,127.44,8,144,0.92,16.56,OKAY,OKAY
+Foods,Pocket tissue,8/7/2026,34,31,1.1,34.1,2,62,0.9,27.9,OKAY,OKAY
+Foods,Shaving stick,8/8/2026,22,21,0.95,19.95,1.2,25.2,0.25,5.25,OKAY,OKAY
+Foods,Foam sponge,8/9/2026,4,4,1.5,6,2,8,0.5,2,LOW,OKAY
+Foods,Thread,8/11/2026,9,9,1.5,13.5,2,18,0.5,4.5,OKAY,OKAY
+Foods,Pepsodent bs,8/12/2026,9,7,16.67,116.69,18,126,1.33,9.31,OKAY,OKAY
+Foods,Pepsodent ss,8/13/2026,17,16,7.17,114.72,8.5,136,1.33,21.28,OKAY,OKAY
+Foods,247Pepsodent charcoal,8/14/2026,2,2,17.5,35,18.5,37,1,2,LOW,OKAY
+Foods,Colgate charcoal,8/15/2026,11,11,17.5,192.5,19,209,1.5,16.5,OKAY,OKAY
+Foods,Colgate brush,8/16/2026,3,1,6.25,6.25,7,7,0.75,0.75,LOW,OKAY
+Foods,Pepsodent brush,8/17/2026,9,8,2.25,18,3,24,0.75,6,OKAY,OKAY
+Foods,Yazz brush,8/18/2026,5,4,2.31,9.24,3.5,14,1.19,4.76,LOW,OKAY
+Foods,Kids brush,8/19/2026,8,7,2.25,15.75,3,21,0.75,5.25,OKAY,OKAY
+Foods,Vip brush,8/20/2026,7,7,1.17,8.19,1.5,10.5,0.33,2.31,OKAY,OKAY
+Foods,Borla rubber,8/21/2026,22,21,1.25,26.25,3,63,1.75,36.75,OKAY,OKAY
+Foods,Black rubber bs,8/22/2026,27,26,0.73,18.98,1.5,39,0.77,20.02,OKAY,OKAY
+Foods,Blue rubber ms,8/23/2026,27,27,2,54,2.5,67.5,0.5,13.5,OKAY,OKAY
+Foods,Design rubber,8/24/2026,8,8,1.25,10,3,24,1.75,14,OKAY,OKAY
+Foods,Blue rubber ss,8/25/2026,39,39,0.57,22.23,1.5,58.5,0.93,36.27,OKAY,OKAY
+Foods,Olonka rubber,8/26/2026,2,1,3.5,3.5,4,4,0.5,0.5,LOW,OKAY
+Foods,Olonka half,8/27/2026,32,32,1.5,48,2,64,0.5,16,OKAY,OKAY
+Foods,Banku rubber,8/28/2026,191,191,1,191,1.5,286.5,0.5,95.5,OKAY,OKAY
+Foods,Kleesoft bs,8/29/2026,5,5,19.5,97.5,22,110,2.5,12.5,OKAY,OKAY
+Foods,Hard blue,8/30/2026,9,7,0.2,1.4,0.5,3.5,0.3,2.1,OKAY,OKAY
+Foods,Powdered blue,8/31/2026,19,19,2.29,43.51,3,57,0.71,13.49,OKAY,OKAY
+Foods,Pegs,9/1/2026,17,17,5.5,93.5,7,119,1.5,25.5,OKAY,OKAY
+Foods,Powerzone ss,9/2/2026,1,1,11,11,12,12,1,1,LOW,OKAY
+Foods,Powerzone bs,9/3/2026,1,1,16,16,20,20,4,4,LOW,OKAY
+Foods,Madar powerzone,9/4/2026,5,5,13,65,15,75,2,10,OKAY,OKAY
+Foods,26M9adar powdered soap bs,9/5/2026,6,6,21,126,22,132,1,6,OKAY,OKAY
+Foods,Mok ms,9/6/2026,4,4,1.7,6.8,2,8,0.3,1.2,LOW,OKAY
+Foods,Kleesoft ms,9/7/2026,31,28,3.55,99.4,4.5,126,0.95,26.6,OKAY,OKAY
+Foods,Soklin bs,9/8/2026,0,0,5.54,0,7,0,1.46,0,LOW,OKAY
+Foods,Soklin ss,9/9/2026,9,7,1.04,7.28,1.5,10.5,0.46,3.22,OKAY,OKAY
+Foods,Mok ss,9/10/2026,55,45,0.85,38.25,1.5,67.5,0.65,29.25,OKAY,OKAY
+Foods,Silvershine paper,9/11/2026,8,8,1.25,10,2,16,0.75,6,OKAY,OKAY
+Foods,Silver shine hard,9/12/2026,7,7,2.08,14.56,2.5,17.5,0.42,2.94,OKAY,OKAY
+Foods,Air freshner,9/13/2026,0,0,4.17,0,6,0,1.83,0,LOW,OKAY
+Foods,Madar dettol ss,9/14/2026,0,0,7,0,8,0,1,0,LOW,OKAY
+Foods,Jamaa ss,9/15/2026,10,9,3.5,31.5,5,45,1.5,13.5,OKAY,OKAY
+Foods,Jamaa ms,9/16/2026,9,9,5.5,49.5,7,63,1.5,13.5,OKAY,OKAY
+Foods,Jamaa bs,9/17/2026,0,0,7.5,0,9,0,1.5,0,LOW,OKAY
+Foods,Juliet,9/18/2026,1,1,8,8,9,9,1,1,LOW,OKAY
+Foods,Avril,9/19/2026,6,5,7.5,37.5,9,45,1.5,7.5,OKAY,OKAY
+Foods,Alife,9/20/2026,0,0,4,0,5,0,1,0,LOW,OKAY
+Foods,Geisha black soap,9/21/2026,4,4,13,52,14,56,1,4,LOW,OKAY
+Foods,Geisha,9/22/2026,0,0,11,0,12,0,1,0,LOW,OKAY
+Foods,Sunlight,9/23/2026,10,9,5,45,6,54,1,9,OKAY,OKAY
+Foods,Mercy soap,9/24/2026,3,3,7,21,10,30,3,9,LOW,OKAY
+Foods,Chocho soap,9/25/2026,2,2,7,14,10,20,3,6,LOW,OKAY
+Foods,Remova,9/26/2026,11,11,4.5,49.5,5,55,0.5,5.5,OKAY,OKAY
+Foods,Saba gold,9/27/2026,6,6,7.78,46.68,8,48,0.22,1.32,OKAY,OKAY
+Foods,Madar soap ss,9/29/2026,3,3,4,12,0,0,-4,-12,LOW,OKAY
+Foods,Medisoft,9/30/2026,1,1,5.83,5.83,7,7,1.17,1.17,LOW,OKAY
+Foods,Jo,10/1/2026,3,3,6.17,18.51,7,21,0.83,2.49,LOW,OKAY
+Foods,Nova,10/2/2026,2,2,8.75,17.5,10,20,1.25,2.5,LOW,OKAY
+Foods,LA bella,10/3/2026,2,1,5.67,5.67,7,7,1.33,1.33,LOW,OKAY
+Foods,Obolo,10/4/2026,1,1,6,6,7,7,1,1,LOW,OKAY
+Foods,Saba fruity,10/5/2026,1,1,6,6,7,7,1,1,LOW,OKAY
+Foods,Athena,10/6/2026,4,4,4.17,16.68,5,20,0.83,3.32,LOW,OKAY
+Foods,Dudu,10/7/2026,5,5,9,45,10,50,1,5,OKAY,OKAY
+Foods,Siri,10/8/2026,4,4,8.75,35,10,40,1.25,5,LOW,OKAY
+Foods,Baby soap,10/9/2026,5,5,4.33,21.65,6,30,1.67,8.35,OKAY,OKAY
+Foods,Fruiser,10/10/2026,2,2,65,130,70,140,5,10,LOW,OKAY
+Foods,Queen lotion bs,10/11/2026,2,2,30,60,32,64,2,4,LOW,OKAY
+Foods,Queen lotion ms,10/12/2026,0,0,19,0,21,0,2,0,LOW,OKAY
+Foods,Queen lotion ss,10/13/2026,2,1,12,12,15,15,3,3,LOW,OKAY
+Foods,Vaseline lotion,10/14/2026,1,1,35,35,37,37,2,2,LOW,OKAY
+Foods,Eco gel,10/15/2026,1,1,25,25,26,26,1,1,LOW,OKAY
+Foods,Lovillea,10/16/2026,9,9,11.5,103.5,13,117,1.5,13.5,OKAY,OKAY
+Foods,Joy cream ss,10/17/2026,0,-1,7.5,-7.5,9,-9,1.5,-1.5,LOW,OKAY
+Foods,Nazo,10/18/2026,2,1,2.92,2.92,5,5,2.08,2.08,LOW,OKAY
+Foods,313Princess cocoa paa ss,10/19/2026,1,1,18,18,20,20,2,2,LOW,OKAY
+Foods,314Princess cocoa paa bs,10/20/2026,1,1,28,28,30,30,2,2,LOW,OKAY
+Foods,Chocho cream,10/21/2026,4,4,7,28,10,40,3,12,LOW,OKAY
+Foods,Mercy ointment,10/22/2026,6,6,7,42,10,60,3,18,OKAY,OKAY
+Foods,Vaseline bs,10/23/2026,5,5,35,175,37,185,2,10,OKAY,OKAY
+Foods,Eversheen lotion,10/24/2026,3,3,34,102,37,111,3,9,LOW,OKAY
+Foods,Joy ointment bs,10/25/2026,1,1,49,49,50,50,1,1,LOW,OKAY
+Foods,Bebe n maman bs,10/26/2026,1,1,36,36,38,38,2,2,LOW,OKAY
+Foods,Bebe n maman ss,10/27/2026,0,0,12,0,15,0,3,0,LOW,OKAY
+Foods,Sister bs,10/28/2026,3,3,25,75,27,81,2,6,LOW,OKAY
+Foods,Sister ss,10/29/2026,1,1,8,8,10,10,2,2,LOW,OKAY
+Foods,324 Eversheen lotion ss,10/30/2026,4,4,17,68,0,0,-17,-68,LOW,OKAY
+Foods,Queen cream bs,10/31/2026,2,1,30,30,32,32,2,2,LOW,OKAY
+Foods,Habitat bs,11/1/2026,4,4,18,72,20,80,2,8,LOW,OKAY
+Foods,Queen ms,11/2/2026,3,3,25,75,27,81,2,6,LOW,OKAY
+Foods,Queen cream ss,11/3/2026,3,3,15,45,17,51,2,6,LOW,OKAY
+Foods,Sister ms,11/4/2026,6,6,13,78,15,90,2,12,OKAY,OKAY
+Foods,Sister ss,11/5/2026,4,4,11,44,12,48,1,4,LOW,OKAY
+Foods,Habiba ss,11/6/2026,1,1,11,11,12,12,1,1,LOW,OKAY
+Foods,332 Eversheen cream ss,11/7/2026,3,2,13,26,15,30,2,4,LOW,OKAY
+Foods,Sure spray,11/8/2026,2,1,35,35,40,40,5,5,LOW,OKAY
+Foods,Rexona spray,11/9/2026,2,2,27,54,36,72,9,18,LOW,OKAY
+Foods,Dove spray,11/10/2026,4,1,36,36,40,40,4,4,LOW,OKAY
+Foods,Hot ice,11/11/2026,2,1,30,30,35,35,5,5,LOW,OKAY
+Foods,Victoria's secret,11/12/2026,5,4,37.5,150,50,200,12.5,50,LOW,OKAY
+Foods,Body cology,11/13/2026,1,1,45,45,50,50,5,5,LOW,OKAY
+Foods,Body splash bs,11/14/2026,13,13,21.67,281.71,25,325,3.33,43.29,OKAY,OKAY
+Foods,Body splash ss,11/15/2026,7,7,12,84,15,105,3,21,OKAY,OKAY
+Foods,Berry ﬂirt,11/17/2026,2,2,17,34,20,40,3,6,LOW,OKAY
+Foods,Elegant princess,11/18/2026,0,0,17,0,20,0,3,0,LOW,OKAY
+Foods,Color me,11/19/2026,3,3,47,141,50,150,3,9,LOW,OKAY
+Foods,My color,11/20/2026,2,2,20,40,22,44,2,4,LOW,OKAY
+Foods,Hayaati,11/21/2026,1,1,27,27,30,30,3,3,LOW,OKAY
+Foods,Pure love,11/22/2026,0,0,17,0,20,0,3,0,LOW,OKAY
+Foods,Zara man,11/23/2026,0,0,27,0,30,0,3,0,LOW,OKAY
+Foods,Smart,11/24/2026,2,2,27,54,30,60,3,6,LOW,OKAY
+Foods,Baby oil bs,11/25/2026,0,0,16,0,18,0,2,0,LOW,OKAY
+Foods,Passion ss,11/26/2026,4,4,5,20,6,24,1,4,LOW,OKAY
+Foods,Passion bs,11/27/2026,1,1,8,8,10,10,2,2,LOW,OKAY
+Foods,Baby girl bs,11/28/2026,3,3,10,30,12,36,2,6,LOW,OKAY
+Foods,Silverline,11/29/2026,1,1,5,5,6,6,1,1,LOW,OKAY
+Foods,Sister powder,11/30/2026,0,0,9,0,10,0,1,0,LOW,OKAY
+Foods,Skin soft,12/1/2026,1,1,5.5,5.5,7,7,1.5,1.5,LOW,OKAY
+Foods,Baby oil ss,12/2/2026,0,0,10,0,11,0,1,0,LOW,OKAY
+Foods,Nivea roll on,12/3/2026,4,3,23.5,70.5,25,75,1.5,4.5,LOW,OKAY
+Foods,Rexona roll on,12/4/2026,5,5,20,100,21,105,1,5,OKAY,OKAY
+Foods,Earring,12/5/2026,4,4,6.67,26.68,10,40,3.33,13.32,LOW,OKAY
+Foods,Aboniki,12/6/2026,8,7,6.67,46.69,8,56,1.33,9.31,OKAY,OKAY
+Foods,Chinese rob,12/7/2026,9,9,4,36,5,45,1,9,OKAY,OKAY
+Foods,Rob ss,12/8/2026,0,-2,1.12,-2.24,2.5,-5,1.38,-2.76,LOW,OKAY
+Foods,Rob bs,12/9/2026,8,8,5,40,6,48,1,8,OKAY,OKAY
+Foods,Johnson baby oil,12/10/2026,33,33,36,1188,0,0,-36,-1188,OKAY,OKAY
+Foods,Notebook 15.00,12/11/2026,3,3,14,42,15,45,1,3,LOW,OKAY
+Foods,Notebook 12,12/12/2026,2,2,11,22,12,24,1,2,LOW,OKAY
+Foods,Notebook 19,12/13/2026,4,4,18,72,19,76,1,4,LOW,OKAY
+Foods,Notebook 23,12/14/2026,3,3,22,66,23,69,1,3,LOW,OKAY
+Foods,Notebook 17,12/15/2026,1,1,16,16,17,17,1,1,LOW,OKAY
+Foods,Cleanz,12/16/2026,1,1,20,20,21,21,1,1,LOW,OKAY
+Foods,Dove gel bs,12/17/2026,0,0,68,0,71,0,3,0,LOW,OKAY
+Foods,Dove gel ss,12/18/2026,2,2,53,106,55,110,2,4,LOW,OKAY
+Foods,Paper glue,12/19/2026,6,6,5,30,6,36,1,6,OKAY,OKAY
+Foods,Correction ﬂuid,12/20/2026,6,6,2.33,13.98,4,24,1.67,10.02,OKAY,OKAY
+Foods,Clear bag oﬃcial,12/21/2026,11,11,2.33,25.63,3.5,38.5,1.17,12.87,OKAY,OKAY
+Foods,Colored ﬁle,12/22/2026,9,9,1.5,13.5,2,18,0.5,4.5,OKAY,OKAY
+Foods,Oﬃcial paper,12/23/2026,389,389,0.17,66.13,0.3,116.7,0.13,50.57,OKAY,OKAY
+Foods,379 Permanent marker,12/24/2026,9,9,1.25,11.25,2,18,0.75,6.75,OKAY,OKAY
+Foods,380 White board marker,12/25/2026,16,15,1.5,22.5,2,30,0.5,7.5,OKAY,OKAY
+Foods,Brown envelope,12/26/2026,42,42,0.7,29.4,1.5,63,0.8,33.6,OKAY,OKAY
+Foods,Long rule,12/27/2026,24,24,1.67,40.08,2,48,0.33,7.92,OKAY,OKAY
+Foods,Short rule,12/28/2026,10,9,0.83,7.47,1,9,0.17,1.53,OKAY,OKAY
+Foods,Plaster,12/29/2026,84,84,0.17,14.28,0.33,27.72,0.16,13.44,OKAY,OKAY
+Foods,Envelope,12/30/2026,44,44,0.36,15.84,0.5,22,0.14,6.16,OKAY,OKAY
+Foods,Cellotape extra big,12/31/2026,2,2,8,16,10,20,2,4,LOW,OKAY
+Foods,Cellotape bs,1/1/2027,3,3,1.5,4.5,2,6,0.5,1.5,LOW,OKAY
+Foods,Cellotape ms,1/2/2027,6,6,1.25,7.5,1.5,9,0.25,1.5,OKAY,OKAY
+Foods,Cellotape ss,1/3/2027,6,6,0.75,4.5,1,6,0.25,1.5,OKAY,OKAY
+Foods,Price tag,1/5/2027,10,10,2.5,25,3,30,0.5,5,OKAY,OKAY
+Foods,Handkerchief,1/6/2027,14,13,4.2,54.6,5,65,0.8,10.4,OKAY,OKAY
+Foods,Face towel,1/7/2027,11,11,2.5,27.5,3,33,0.5,5.5,OKAY,OKAY
+Foods,Eraser,1/8/2027,117,117,0.47,54.99,1,117,0.53,62.01,OKAY,OKAY
+Foods,Sharpener,1/9/2027,63,63,0.29,18.27,0.5,31.5,0.21,13.23,OKAY,OKAY
+Foods,Super glue,1/10/2027,2,2,1.04,2.08,3,6,1.96,3.92,LOW,OKAY
+Foods,Power house,1/11/2027,4,4,18.33,73.32,20,80,1.67,6.68,LOW,OKAY
+Foods,Ufresh chocolate,1/12/2027,10,8,4.25,34,6,48,1.75,14,OKAY,OKAY
+Foods,Ear bud,1/13/2027,5,5,1.2,6,2,10,0.8,4,OKAY,OKAY
+Foods,Yazz wipes,1/14/2027,0,0,18,0,20,0,2,0,LOW,OKAY
+Foods,Huggies wipes,1/15/2027,0,0,18,0,20,0,2,0,LOW,OKAY
+Foods,Alvaro,1/16/2027,15,15,8.83,132.45,9.5,142.5,0.67,10.05,OKAY,OKAY
+Foods,Egg,1/17/2027,62,23,2.17,49.91,2.5,57.5,0.33,7.59,OKAY,OKAY
+Foods,Plastic malt,1/18/2027,22,6,8.83,52.98,10,60,1.17,7.02,OKAY,OKAY
+Foods,Carnation sachet,1/19/2027,26,26,2.3,59.8,2.5,65,0.2,5.2,OKAY,OKAY
+Foods,Holy coil,1/20/2027,40,40,0.8,32,1,40,0.2,8,OKAY,OKAY
+Foods,Special apple,1/21/2027,0,0,2.5,0,3,0,0.5,0,LOW,OKAY
+Foods,Special grape,1/22/2027,2,2,2.69,5.38,3,6,0.31,0.62,LOW,OKAY
+Foods,Tiger head,1/23/2027,0,0,5.33,0,6,0,0.67,0,LOW,OKAY
+Foods,Nancy sardine,1/24/2027,6,5,9,45,9.5,47.5,0.5,2.5,OKAY,OKAY
+Foods,Ena pa sardine,1/25/2027,8,8,9.5,76,10,80,0.5,4,OKAY,OKAY
+Foods,Camel ss,1/26/2027,1,1,14,14,15,15,1,1,LOW,OKAY
+Foods,Camel bs,1/27/2027,1,1,42.5,42.5,44,44,1.5,1.5,LOW,OKAY
+Foods,Nivea spray ss,1/28/2027,0,-2,40.5,-81,42,-84,1.5,-3,LOW,OKAY
+Foods,Nivea spray bs,1/29/2027,4,4,50,200,54,216,4,16,LOW,OKAY
+Foods,Milky magic,1/30/2027,65,53,0.83,43.99,1,53,0.17,9.01,OKAY,OKAY
+Foods,Lude polish,1/31/2027,3,3,4.5,13.5,5,15,0.5,1.5,LOW,OKAY
+Foods,Sunwatt battery,2/1/2027,13,13,1.67,21.71,2.5,32.5,0.83,10.79,OKAY,OKAY
+Foods,Kleesoft soap bs,2/2/2027,3,3,5,15,6,18,1,3,LOW,OKAY
+Foods,Madar soap ms,2/3/2027,4,4,5.5,22,6.5,26,1,4,LOW,OKAY
+Foods,Imperial leather,2/4/2027,0,0,13.33,0,14,0,0.67,0,LOW,OKAY
+Foods,837Madar powdered soap,2/5/2027,20,20,3.75,75,4.5,90,0.75,15,OKAY,OKAY
+Foods,Cool bag,2/6/2027,19,37,8,296,9,333,1,37,OKAY,OKAY
+Foods,Tilapia,2/7/2027,15,15,18,270,20,300,2,30,OKAY,OKAY
+Foods,Funbact bliss,2/8/2027,3,3,10,30,12,36,2,6,LOW,OKAY
+Foods,Bella bs,2/9/2027,1,1,32.5,32.5,35,35,2.5,2.5,LOW,OKAY
+Foods,Bella ss,2/10/2027,1,1,12,12,15,15,3,3,LOW,OKAY
+Foods,1265Eversheen cream bs,2/11/2027,1,1,24,24,27,27,3,3,LOW,OKAY
+Foods,1266 Nivea cocoa lotion,2/12/2027,2,2,48,96,60,120,12,24,LOW,OKAY
+Foods,1267Nivea vitamin c lotion,2/13/2027,0,0,65,0,72,0,7,0,LOW,OKAY
+Foods,Dove roll on,2/14/2027,2,2,21,42,22,44,1,2,LOW,OKAY
+Foods,Sure roll on,2/15/2027,1,1,19,19,21,21,2,2,LOW,OKAY
+Foods,Styling gel,2/16/2027,7,6,4.5,27,6,36,1.5,9,OKAY,OKAY
+Foods,Air cream,2/17/2027,5,5,12.5,62.5,15,75,2.5,12.5,OKAY,OKAY
+Foods,Ophylia,2/18/2027,3,2,25,50,30,60,5,10,LOW,OKAY
+Foods,Aventos,2/19/2027,2,1,25,25,35,35,10,10,LOW,OKAY
+Foods,1274Black leather spray,2/20/2027,1,1,25,25,35,35,10,10,LOW,OKAY
+Foods,Fiero,2/21/2027,0,0,25,0,30,0,5,0,LOW,OKAY
+Foods,Private collection,2/23/2027,2,2,30,60,50,100,20,40,LOW,OKAY
+Foods,777 sexy men,2/24/2027,2,2,30,60,50,100,20,40,LOW,OKAY
+Foods,Reve dor,2/25/2027,1,1,30,30,50,50,20,20,LOW,OKAY
+Foods,1280  Royal afterwash,2/26/2027,13,11,2.08,22.88,3,33,0.92,10.12,OKAY,OKAY
+Foods,1281Comfort afterwash,2/27/2027,1,1,1.8,1.8,2,2,0.2,0.2,LOW,OKAY
+Foods,Camphor,2/28/2027,2,2,7,14,8,16,1,2,LOW,OKAY
+Foods,Sasso coil,3/1/2027,32,28,1.6,44.8,2,56,0.4,11.2,OKAY,OKAY
+Foods,Cornﬂakes,3/2/2027,2,2,50,100,51,102,1,2,LOW,OKAY
+Foods,Milo tin,3/3/2027,3,3,50,150,52,156,2,6,LOW,OKAY
+Foods,Tom brown,3/4/2027,3,3,27,81,28,84,1,3,LOW,OKAY
+Foods,Lipton,3/5/2027,0,0,16,0,18,0,2,0,LOW,OKAY
+Foods,Coke ms,3/6/2027,18,30,7.92,237.6,9,270,1.08,32.4,OKAY,OKAY
+Foods,Don simon,3/7/2027,1,0,27.5,0,30,0,2.5,0,LOW,OKAY
+Foods,Vitamilk,3/8/2027,4,0,12.92,0,15,0,2.08,0,LOW,OKAY
+Foods,Bellefu,3/9/2027,9,7,13.53,94.71,16,112,2.47,17.29,OKAY,OKAY
+Foods,Koko troll,3/10/2027,30,30,2.3,69,3,90,0.7,21,OKAY,OKAY
+Foods,Gino paste 70g,3/11/2027,4,4,12,48,13,52,1,4,LOW,OKAY
+Foods,129G4ino paste sachet 210g,3/12/2027,3,3,8.5,25.5,9.5,28.5,1,3,LOW,OKAY
+Foods,129G5ino paste sachet 400g,3/13/2027,5,5,12.5,62.5,14,70,1.5,7.5,OKAY,OKAY
+Foods,129T6asty Tom sachet 210g,3/14/2027,4,4,8.5,34,9.5,38,1,4,LOW,OKAY
+Foods,Delay sardine,3/15/2027,2,2,9.5,19,10,20,0.5,1,LOW,OKAY
+Foods,Tomtom,3/16/2027,180,148,0.35,51.8,0.5,74,0.15,22.2,OKAY,OKAY
+Foods,Lipton,3/17/2027,2,2,0.64,1.28,1,2,0.36,0.72,LOW,OKAY
+Foods,Jollof mix,3/18/2027,2,2,9,18,9.5,19,0.5,1,LOW,OKAY
+Foods,Bing pop,3/19/2027,0,0,0.7,0,1,0,0.3,0,LOW,OKAY
+Foods,1302 Disposable cup ss,3/20/2027,2,2,5,10,15,30,10,20,LOW,OKAY
+Foods,1303 Disposable cup bs,3/21/2027,2,2,10,20,20,40,10,20,LOW,OKAY
+Foods,130D4isposable cup colored,3/22/2027,1,1,40,40,45,45,5,5,LOW,OKAY
+Foods,Top choco ss,3/23/2027,15,14,1.5,21,2,28,0.5,7,OKAY,OKAY
+Foods,Magico,3/24/2027,2,0,8.5,0,10,0,1.5,0,LOW,OKAY
+Foods,Yazz T-roll,3/25/2027,50,50,3,150,3.5,175,0.5,25,OKAY,OKAY
+Foods,Flora tissue bs,3/26/2027,5,5,4.5,22.5,6,30,1.5,7.5,OKAY,OKAY
+Foods,Perla soap,3/27/2027,3,2,6.5,13,8,16,1.5,3,LOW,OKAY
+Foods,Dr.x savon soap,3/28/2027,2,0,4,0,5,0,1,0,LOW,OKAY
+Foods,1785Heaven spray 700ml,3/29/2027,1,1,60,60,62,62,2,2,LOW,OKAY
+Foods,1786Heaven spray 600ml,3/30/2027,1,1,42,42,45,45,3,3,LOW,OKAY
+Foods,Sugar,3/31/2027,28,25,0.5,12.5,1,25,0.5,12.5,OKAY,OKAY
+Foods,1788 Black socks 30-22,4/1/2027,1,1,6.67,6.67,8,8,1.33,1.33,LOW,OKAY
+Foods,1789Adidas socks white,4/2/2027,3,3,6.67,20.01,8,24,1.33,3.99,LOW,OKAY
+Foods,1790 White socks 22-24,4/3/2027,2,2,5,10,7,14,2,4,LOW,OKAY
+Foods,Socks 18-20,4/4/2027,5,5,5,25,7,35,2,10,OKAY,OKAY
+Foods,Socks ss,4/5/2027,5,5,5,25,6,30,1,5,OKAY,OKAY
+Foods,Socks 30-32,4/6/2027,0,0,5,0,8,0,3,0,LOW,OKAY
+Foods,1794Royal umbrella 5kg,4/7/2027,1,1,155,155,157,157,2,2,LOW,OKAY
+Foods,Cindy 5kg,4/8/2027,1,1,100,100,102,102,2,2,LOW,OKAY
+Foods,Millicent 4kg,4/9/2027,1,1,80,80,82,82,2,2,LOW,OKAY
+Foods,Oba 4.2kg,4/10/2027,1,1,90,90,92,92,2,2,LOW,OKAY
+Foods,London 4.2kg,4/11/2027,1,1,90,90,92,92,2,2,LOW,OKAY
+Foods,Nsu rubber,4/13/2027,5,5,5,25,6,30,1,5,OKAY,OKAY
+Foods,Sugar rubber,4/14/2027,9,9,1.5,13.5,2,18,0.5,4.5,OKAY,OKAY
+Foods,Takeaway rubber,4/15/2027,"1,000.00",1000,0.01,10,0.1,100,0.09,90,OKAY,OKAY
+Foods,Bic Shaving stick,4/16/2027,100,100,2.4,240,3,300,0.6,60,OKAY,OKAY
+Foods,Lele corned beef,4/17/2027,1,1,42,42,44,44,2,2,LOW,OKAY
+Foods,1805Obaapa corned beef,4/18/2027,0,0,37,0,40,0,3,0,LOW,OKAY
+Foods,1806  Geisha mackerel,4/19/2027,5,5,10,50,11,55,1,5,OKAY,OKAY
+Foods,1807 Sister mackerel ss,4/20/2027,5,5,8.5,42.5,9.5,47.5,1,5,OKAY,OKAY
+Foods,Madar soap bs,4/21/2027,7,7,7,49,8,56,1,7,OKAY,OKAY
+Foods,Burger,4/22/2027,0,-1,2.92,-2.92,3,-3,0.08,-0.08,LOW,OKAY
+Foods,Burger ss,4/23/2027,24,21,1.92,40.32,3,63,1.08,22.68,OKAY,OKAY
+Foods,2819Blue band magarine,4/24/2027,12,12,14,168,0,0,-14,-168,OKAY,OKAY
+Foods,Oil bs,4/25/2027,5,5,25.11,125.55,50,250,24.89,124.45,OKAY,OKAY
+Foods,Oil ms,4/26/2027,13,13,15.83,205.79,18,234,2.17,28.21,OKAY,OKAY
+Foods,Oil ss,4/27/2027,20,20,9,180,11,220,2,40,OKAY,OKAY
+Foods,Perk bs,4/28/2027,45,45,1.75,78.75,2.5,112.5,0.75,33.75,OKAY,OKAY
+Foods,H&H oatbar,4/29/2027,107,107,1,107,1.5,160.5,0.5,53.5,OKAY,OKAY
+Foods,H&H crispy rolls,4/30/2027,11,0,1.17,0,1.5,0,0.33,0,LOW,OKAY
+Foods,Blue band sachet,5/1/2027,28,28,0.73,20.44,1,28,0.27,7.56,OKAY,OKAY
+Foods,Cindy sardine,5/2/2027,0,0,8,0,8.5,0,0.5,0,LOW,OKAY
+Foods,Yvonne sardine,5/3/2027,2,1,8,8,8.5,8.5,0.5,0.5,LOW,OKAY
+Foods,Sister sardine,5/4/2027,6,6,8,48,8.5,51,0.5,3,OKAY,OKAY
+Foods,4348Eversheen lotion ss,5/5/2027,2,2,15,30,20,40,5,10,LOW,OKAY
+Foods,4349  Nivea nourishing,5/6/2027,2,2,48,96,60,120,12,24,LOW,OKAY
+Foods,4350 Funbact entrance,5/7/2027,1,0,8,0,10,0,2,0,LOW,OKAY
+Foods,Epiderm,5/8/2027,2,2,9,18,12,24,3,6,LOW,OKAY
+Foods,4352  Joy ointment ss,5/9/2027,1,1,8,8,10,10,2,2,LOW,OKAY
+Foods,Squeeze,5/10/2027,32,32,2.5,80,4,128,1.5,48,OKAY,OKAY
+Foods,tropical,5/10/2027,32,32,2.5,80,4,128,1.5,48,OKAY,OKAY

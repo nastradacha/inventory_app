@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, flash, request, abort, session
+from flask import Flask, render_template, redirect, url_for, flash, request, abort, session,send_file, make_response
 from flask_login import LoginManager, login_user, login_required, current_user, logout_user
 from flask_wtf import CSRFProtect 
 from functools import wraps
@@ -10,6 +10,13 @@ from config import Config
 from models import db, Product, Sale, User, PriceChange, LogEntry, Shift
 from forms import AddStockForm, RecordSaleForm, NewUserForm, ResetPwdForm, EditProductForm, EditSaleForm
 from rapidfuzz import fuzz
+
+from sqlalchemy import func, cast, Date
+import pandas as pd
+from io import StringIO
+from io import BytesIO
+
+# import weasyprint
 
 
 app = Flask(__name__)
@@ -424,6 +431,119 @@ def inject_shift_totals():
     else:
         shift = qty = rev = None
     return dict(open_shift=shift, shift_qty=qty or 0, shift_rev=rev or 0.0)
+
+
+def _aggregate_sales(period):
+    """
+    period = 'day' | 'week' | 'month' | 'year'
+    returns list of dicts: [{'bucket': '2025-06-14', 'qty': 34, 'rev': 421.00, 'cost': 287.0}]
+    """
+    bucket_expr = {
+        'day':   func.date(Sale.date),                        # 2025-06-14
+        'week':  func.date_trunc('week', Sale.date),          # 2025-06-09 00:00
+        'month': func.date_trunc('month', Sale.date),         # 2025-06-01 00:00
+        'year':  func.date_trunc('year', Sale.date),          # 2025-01-01 00:00
+    }[period]
+
+    rows = (db.session.query(bucket_expr.label('bucket'),
+                             func.sum(Sale.qty_sold).label('qty'),
+                             func.sum(Sale.qty_sold * Product.selling_price).label('rev'),
+                             func.sum(Sale.qty_sold * Product.cost_price).label('cost'))
+            .join(Product)
+            .group_by('bucket')
+            .order_by('bucket')
+            .all())
+    return [{'bucket': r.bucket.date() if isinstance(r.bucket, datetime) else r.bucket,
+             'qty': int(r.qty or 0),
+             'rev': float(r.rev or 0),
+             'cost': float(r.cost or 0)} for r in rows]
+
+@app.route('/reports/sales-summary')
+@login_required
+@manager_required
+def sales_summary():
+    period     = request.args.get('period', 'day')          # day|week|month|year
+    breakdown  = request.args.get('breakdown', 'summary')   # summary|category|product
+    export     = request.args.get('export')                 # csv|pdf
+
+    # 1-A  aggregate once
+    rows = _aggregate_sales(period)                         # list of {bucket, qty, rev, cost}
+
+    gp_data = [{
+        'bucket': r['bucket'],
+        'qty':    r['qty'],
+        'rev':    r['rev'],
+        'cost':   r['cost'],
+        'gp':     r['rev'] - r['cost']
+    } for r in rows]
+
+    # 1-B  derive view-specific structures
+    if breakdown == 'category':
+        view_rows = (
+            db.session.query(Product.category,
+                             func.sum(Sale.qty_sold*Product.selling_price).label('rev'))
+            .join(Product)
+            .group_by(Product.category).all()
+        )
+        chart_labels = [c for c, _ in view_rows]
+        chart_values = [float(r) for _, r in view_rows]
+
+    elif breakdown == 'product':
+        view_rows = (
+            db.session.query(Product.name,
+                             func.sum(Sale.qty_sold).label('qty'),
+                             func.sum(Sale.qty_sold*Product.selling_price).label('rev'))
+            .join(Product)
+            .group_by(Product.name)
+            .order_by(func.sum(Sale.qty_sold*Product.selling_price).desc())
+            .limit(50)    # top 50 rows
+            .all()
+        )
+        chart_labels = [n for n, _, _ in view_rows][:10]     # top10 bars
+        chart_values = [float(r) for _, _, r in view_rows][:10]
+
+    else:  # 'summary'
+        view_rows = gp_data 
+        chart_labels = [r['bucket'] for r in gp_data]
+        chart_values = [r['rev'] for r in gp_data]
+
+    # 1-C  handle CSV export
+    if export == 'csv':
+        df = pd.DataFrame(view_rows)
+        return send_file(BytesIO(df.to_csv(index=False).encode()),
+                         'text/csv',
+                         download_name=f'sales_{breakdown}_{period}.csv',
+                         as_attachment=True)
+
+    return render_template(
+        'sales_summary.html',
+        period=period,
+        breakdown=breakdown,
+        data=gp_data,          # now defined
+        rows=view_rows,
+        chart_labels=chart_labels,
+        chart_values=chart_values,
+        currency=app.config['CURRENCY_SYMBOL']
+    )
+
+
+@app.route('/reports/inventory')
+@login_required 
+@manager_required
+def inventory_report():
+    items = (
+        db.session.query(Product,
+                         (Product.qty_at_hand*Product.cost_price).label('cost_val'),
+                         (Product.qty_at_hand*Product.selling_price).label('sell_val'))
+        .order_by(Product.name)
+        .all())
+    totals = {
+        'cost':  sum(r.cost_val  for r in items),
+        'sell':  sum(r.sell_val for r in items),
+    }
+    return render_template('inventory_report.html',
+                           items=items, totals=totals,
+                           currency=app.config['CURRENCY_SYMBOL'])
 
 
 
