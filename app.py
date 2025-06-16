@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, flash, request, abort, session,send_file, make_response
+from flask import Flask, render_template, redirect, url_for, flash, request, abort, session,send_file, make_response, jsonify
 from flask_login import LoginManager, login_user, login_required, current_user, logout_user
 from flask_wtf import CSRFProtect 
 from functools import wraps
@@ -60,7 +60,7 @@ def dashboard():
     total_cost = sum(p.qty_at_hand * p.cost_price for p in products)
     total_value = sum(p.qty_at_hand * p.selling_price for p in products)
     total_profit = total_value - total_cost
-    low_stock = Product.query.filter(Product.qty_at_hand < Product.safety_stock).all()
+    low_stock = Product.query.filter(Product.qty_at_hand < Product.safety_stock).order_by(Product.qty_at_hand.asc()).limit(20).all()
     top_sales = (
         db.session.query(Product.name, db.func.sum(Sale.qty_sold).label('units'))
         .join(Sale)
@@ -132,16 +132,54 @@ def add_stock():
     return render_template('add_stock.html', form=form, all_names=[])
 
 
+@app.route('/search-products')
+@login_required
+def search_products():
+    search_term = request.args.get('q', '').lower()
+    in_stock = request.args.get('in_stock', 'true') == 'true'
+    
+    # Base query
+    query = Product.query
+    
+    # Filter in-stock items if requested
+    if in_stock:
+        query = query.filter(Product.qty_at_hand > 0)
+    
+    # Search by name or category
+    if search_term:
+        query = query.filter(
+            (func.lower(Product.name).contains(search_term)) | 
+            (func.lower(Product.category).contains(search_term)))
+    
+    # Limit results and format for Select2
+    products = query.order_by(Product.name).limit(20).all()
+    
+    results = [{
+        'id': p.id,
+        'text': f"{p.name} ({p.category}) - Stock: {p.qty_at_hand}",
+        'stock': p.qty_at_hand
+    } for p in products]
+    
+    return jsonify({'items': results})
+
+
+
 
 @app.route('/record-sale', methods=['GET', 'POST'])
 @login_required
 def record_sale():
     form = RecordSaleForm()
-    form.product_id.choices = [
-        (p.id, p.name) for p in Product.query.order_by(Product.name)
-    ]
+    
+    # Remove the choices population completely
+    
     if form.validate_on_submit():
-        product = Product.query.get(int(form.product_id.data))
+        # Get product from ID instead of form choices
+        product = Product.query.get(form.product_id.data)
+        
+        if not product:
+            flash('Product not found!', 'danger')
+            return redirect(url_for('record_sale'))
+            
         if product.qty_at_hand < form.quantity.data:
             flash('Not enough stock!', 'danger')
         else:
@@ -155,6 +193,7 @@ def record_sale():
             db.session.commit()
             flash('Sale recorded.', 'success')
             return redirect(url_for('dashboard'))
+    
     return render_template('record_sale.html', form=form)
 
 
@@ -255,14 +294,58 @@ def reset_pwd(user_id):
         flash('Password reset', 'success')
     return redirect(url_for('users'))
 
-
+@app.route('/product-stock/<int:product_id>')
+@login_required
+def product_stock(product_id):
+    product = Product.query.get(product_id)
+    if product:
+        return jsonify({
+            'success': True,
+            'stock': product.qty_at_hand,
+            'name': product.name
+        })
+    return jsonify({'success': False, 'message': 'Product not found'}), 404
 
 @app.route('/products')
 @login_required
 @manager_required
 def products():
-    items = Product.query.order_by(Product.name).all()
-    return render_template('products.html', items=items)
+    # Get sorting parameters
+    sort_by = request.args.get('sort', 'name')
+    sort_order = request.args.get('order', 'asc')
+    search_query = request.args.get('search', '')
+    page = request.args.get('page', 1, type=int)
+    
+    # Base query
+    query = Product.query
+    
+    # Apply search filter
+    if search_query:
+        query = query.filter(Product.name.ilike(f'%{search_query}%'))
+    
+    # Apply sorting
+    sort_field = {
+        'name': Product.name,
+        'qty': Product.qty_at_hand,
+        'price': Product.selling_price
+    }.get(sort_by, Product.name)
+    
+    if sort_order == 'desc':
+        query = query.order_by(sort_field.desc())
+    else:
+        query = query.order_by(sort_field.asc())
+    
+    # Pagination
+    pagination = query.paginate(page=page, per_page=20, error_out=False)
+    items = pagination.items
+    
+    return render_template('products.html', 
+                           items=items,
+                           sort_by=sort_by,
+                           sort_order=sort_order,
+                           search_query=search_query,
+                           pagination=pagination,
+                           currency=app.config['CURRENCY_SYMBOL'])
 
 @app.route('/product/<int:pid>/edit', methods=['GET', 'POST'])
 @login_required

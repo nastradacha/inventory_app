@@ -1,20 +1,113 @@
 {% extends 'base.html' %}
 {% block content %}
 <h3>Product List</h3>
-<table class="table table-sm"><thead><tr><th>Name</th><th>Qty</th><th>Selling&nbsp;Price</th><th></th></tr></thead><tbody>
-{% for p in items %}
-<tr>
-  <td>{{ p.name }}</td>
-  <td>{{ p.qty_at_hand }}</td>
-  <td>{{ p.selling_price }}</td>
-  <td>
-    <a class="btn btn-sm btn-primary" href="{{ url_for('edit_product', pid=p.id) }}">Edit</a>
-    <form action="{{ url_for('delete_product', pid=p.id) }}" method="post" class="d-inline">
-      {# hidden CSRF token so it never shows up in the cell #}
-      <button class="btn btn-sm btn-danger" onclick="return confirm('Delete?')">Delete</button>
+
+<!-- Sorting Controls -->
+<div class="d-flex justify-content-between mb-3">
+  <div>
+    <div class="btn-group">
+      <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+        Sort by: {{ sort_by|title }}
+      </button>
+      <ul class="dropdown-menu">
+        <li><a class="dropdown-item" href="{{ url_for('products', sort='name') }}">Name</a></li>
+        <li><a class="dropdown-item" href="{{ url_for('products', sort='qty') }}">Quantity</a></li>
+        <li><a class="dropdown-item" href="{{ url_for('products', sort='price') }}">Price</a></li>
+      </ul>
+    </div>
+    
+    <div class="btn-group ms-2">
+      <a href="{{ url_for('products', sort=sort_by, order='asc') }}" 
+         class="btn btn-sm btn-outline-secondary {{ 'active' if sort_order == 'asc' }}">
+        Ascending
+      </a>
+      <a href="{{ url_for('products', sort=sort_by, order='desc') }}" 
+         class="btn btn-sm btn-outline-secondary {{ 'active' if sort_order == 'desc' }}">
+        Descending
+      </a>
+    </div>
+  </div>
+  
+  <div>
+    <form class="input-group input-group-sm" method="get" action="{{ url_for('products') }}">
+      <input type="text" name="search" class="form-control" placeholder="Search products..." 
+             value="{{ search_query or '' }}">
+      <button class="btn btn-outline-secondary" type="submit">Search</button>
     </form>
-  </td>
-</tr>
-{% endfor %}
-</tbody></table>
+  </div>
+</div>
+
+<!-- Products Table -->
+<table class="table table-sm">
+  <thead>
+    <tr>
+      <th class="{{ 'sort-asc' if sort_by == 'name' and sort_order == 'asc' else 'sort-desc' if sort_by == 'name' and sort_order == 'desc' else '' }}">
+        <a href="{{ url_for('products', sort='name', order='asc' if sort_by != 'name' or sort_order == 'desc' else 'desc', search=search_query) }}" class="text-decoration-none text-dark">
+          Name
+        </a>
+      </th>
+      <th class="text-end {{ 'sort-asc' if sort_by == 'qty' and sort_order == 'asc' else 'sort-desc' if sort_by == 'qty' and sort_order == 'desc' else '' }}">
+        <a href="{{ url_for('products', sort='qty', order='asc' if sort_by != 'qty' or sort_order == 'desc' else 'desc', search=search_query) }}" class="text-decoration-none text-dark">
+          Qty
+        </a>
+      </th>
+      <th class="text-end {{ 'sort-asc' if sort_by == 'price' and sort_order == 'asc' else 'sort-desc' if sort_by == 'price' and sort_order == 'desc' else '' }}">
+        <a href="{{ url_for('products', sort='price', order='asc' if sort_by != 'price' or sort_order == 'desc' else 'desc', search=search_query) }}" class="text-decoration-none text-dark">
+          Selling Price
+        </a>
+      </th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for p in items %}
+    <tr>
+      <td>{{ p.name }}</td>
+      <td class="text-end">{{ p.qty_at_hand }}</td>
+      <td class="text-end">{{ currency }}{{ p.selling_price }}</td>
+      <td class="text-end">
+        <a class="btn btn-sm btn-primary" href="{{ url_for('edit_product', pid=p.id) }}">Edit</a>
+        <form action="{{ url_for('delete_product', pid=p.id) }}" method="post" class="d-inline">
+          <button class="btn btn-sm btn-danger" onclick="return confirm('Delete?')">Delete</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<!-- Pagination -->
+{% if pagination and pagination.pages > 1 %}
+<nav>
+  <ul class="pagination pagination-sm justify-content-center">
+    {% if pagination.has_prev %}
+      <li class="page-item">
+        <a class="page-link" href="{{ url_for('products', page=pagination.prev_num, sort=sort_by, order=sort_order, search=search_query) }}">
+          &laquo;
+        </a>
+      </li>
+    {% endif %}
+    
+    {% for page_num in pagination.iter_pages() %}
+      {% if page_num %}
+        <li class="page-item {{ 'active' if page_num == pagination.page }}">
+          <a class="page-link" href="{{ url_for('products', page=page_num, sort=sort_by, order=sort_order, search=search_query) }}">
+            {{ page_num }}
+          </a>
+        </li>
+      {% else %}
+        <li class="page-item disabled"><span class="page-link">...</span></li>
+      {% endif %}
+    {% endfor %}
+    
+    {% if pagination.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="{{ url_for('products', page=pagination.next_num, sort=sort_by, order=sort_order, search=search_query) }}">
+          &raquo;
+        </a>
+      </li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}
 {% endblock %}

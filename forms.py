@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, FloatField, DateField, SelectField, SubmitField
-from wtforms.validators import DataRequired, NumberRange
+from wtforms.validators import DataRequired, NumberRange,  ValidationError
+from models import Product
 
 class AddStockForm(FlaskForm):
     name = StringField('Product name', validators=[DataRequired()])
@@ -14,10 +15,18 @@ class AddStockForm(FlaskForm):
                                 default=5,
                                 validators=[NumberRange(min=0)])
 
+
+
 class RecordSaleForm(FlaskForm):
-    product_id = SelectField('Product')  # choices filled in route
+    product_id = IntegerField('Product ID', validators=[DataRequired()])  # Changed to IntegerField
     quantity = IntegerField('Quantity sold', validators=[NumberRange(min=1)])
     submit = SubmitField('Record Sale')
+    
+    # Add custom validation for product existence
+    def validate_product_id(self, field):
+        if not Product.query.get(field.data):
+            raise ValidationError('Product not found!')
+
 
 class NewUserForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])

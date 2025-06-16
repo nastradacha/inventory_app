@@ -6,3 +6,37 @@ body {
   font-weight: 700;
 }
 .navbar-toggler-icon { filter: invert(1); }
+
+/* Add to styles.css */
+#stock-indicator {
+    font-size: 0.85rem;
+    padding: 0.25rem 0.5rem;
+}
+
+#max-quantity-hint {
+    font-size: 0.85rem;
+}
+
+#quantity-error {
+    font-weight: 500;
+}
+
+/* Add to styles.css */
+.table th {
+    cursor: pointer;
+    position: relative;
+}
+
+.table th.sort-asc::after {
+    content: " ▲";
+    position: absolute;
+    right: 8px;
+    font-size: 0.8em;
+}
+
+.table th.sort-desc::after {
+    content: " ▼";
+    position: absolute;
+    right: 8px;
+    font-size: 0.8em;
+}

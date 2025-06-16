@@ -1,14 +1,142 @@
 {% extends 'base.html' %}
 {% block content %}
 <h2>Record Sale</h2>
-<form method="post" class="row g-3" novalidate>
+<form method="post" class="row g-3" novalidate id="sale-form">
   {{ form.hidden_tag() }}
-  {% for field in form if field.name != 'csrf_token' and field.type != 'SubmitField' %}
+  
+  <!-- Product search field with stock indicator -->
   <div class="col-md-6">
-    {{ field.label(class_='form-label') }}
-    {{ field(class_='form-control' if field.type != 'SelectField' else 'form-select') }}
+    <div class="d-flex justify-content-between align-items-center mb-1">
+      <label class="form-label">Product</label>
+      <div>
+        <span id="stock-indicator" class="badge bg-info d-none">
+          Stock: <span id="stock-count">0</span>
+        </span>
+      </div>
+    </div>
+    <select id="product-search" name="product_id" class="form-select" style="width:100%">
+      <!-- Options will be loaded dynamically -->
+    </select>
+    {% if form.product_id.errors %}
+      <div class="text-danger small">{{ form.product_id.errors[0] }}</div>
+    {% endif %}
   </div>
-  {% endfor %}
-  <div class="col-12"><button class="btn btn-primary">Record</button></div>
+  
+  <!-- Quantity field with validation -->
+  <div class="col-md-6">
+    <div class="d-flex justify-content-between align-items-center mb-1">
+      {{ form.quantity.label(class_='form-label') }}
+      <div id="max-quantity-hint" class="text-muted small d-none">
+        Max: <span id="max-quantity">0</span>
+      </div>
+    </div>
+    {{ form.quantity(class_='form-control') }}
+    {% if form.quantity.errors %}
+      <div class="text-danger small">{{ form.quantity.errors[0] }}</div>
+    {% endif %}
+    <div id="quantity-error" class="text-danger small mt-1 d-none">
+      Not enough stock!
+    </div>
+  </div>
+  
+  <div class="col-12">
+    <button class="btn btn-primary" id="submit-btn">Record</button>
+  </div>
 </form>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+$(document).ready(function() {
+  // Initialize Select2 with AJAX search
+  const productSelect = $('#product-search');
+  productSelect.select2({
+    placeholder: 'Search for product...',
+    minimumInputLength: 1,
+    ajax: {
+      url: '{{ url_for("search_products") }}',
+      dataType: 'json',
+      delay: 250,
+      data: function(params) {
+        return {
+          q: params.term, // search term
+          in_stock: true // only show in-stock items
+        };
+      },
+      processResults: function(data) {
+        return {
+          results: data.items
+        };
+      },
+      cache: true
+    }
+  });
+
+  // Show stock quantity when product is selected
+  productSelect.on('change', function() {
+    const productId = $(this).val();
+    if (productId) {
+      // Fetch stock information
+      fetch(`/product-stock/${productId}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            $('#stock-count').text(data.stock);
+            $('#stock-indicator').removeClass('d-none');
+            
+            // Update max quantity hint
+            $('#max-quantity').text(data.stock);
+            $('#max-quantity-hint').removeClass('d-none');
+            
+            // Update quantity field attributes
+            const quantityField = $('#quantity');
+            quantityField.attr('max', data.stock);
+            
+            // Validate current quantity value
+            validateQuantity(quantityField.val(), data.stock);
+          }
+        });
+    } else {
+      $('#stock-indicator').addClass('d-none');
+      $('#max-quantity-hint').addClass('d-none');
+    }
+  });
+
+  // Validate quantity in real-time
+  $('#quantity').on('input', function() {
+    const stock = parseInt($('#max-quantity').text()) || 0;
+    validateQuantity($(this).val(), stock);
+  });
+
+  // Form submission validation
+  $('#sale-form').on('submit', function(e) {
+    const quantity = parseInt($('#quantity').val()) || 0;
+    const stock = parseInt($('#max-quantity').text()) || 0;
+    
+    if (quantity > stock) {
+      e.preventDefault();
+      $('#quantity-error').removeClass('d-none');
+      $('#quantity').addClass('is-invalid');
+    }
+  });
+
+  // Helper function for quantity validation
+  function validateQuantity(value, stock) {
+    const quantity = parseInt(value) || 0;
+    const errorElement = $('#quantity-error');
+    const submitBtn = $('#submit-btn');
+    
+    if (quantity > stock) {
+      errorElement.removeClass('d-none');
+      $('#quantity').addClass('is-invalid');
+      submitBtn.prop('disabled', true);
+    } else {
+      errorElement.addClass('d-none');
+      $('#quantity').removeClass('is-invalid');
+      submitBtn.prop('disabled', false);
+    }
+  }
+});
+</script>
 {% endblock %}
