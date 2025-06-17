@@ -1,15 +1,19 @@
 {% extends 'base.html' %}
 {% block content %}
-<h3>Sales Reports – {{ breakdown|title }} ({{ period|title }})</h3>
+<h3>Sales Reports – {{ breakdown|title }} ({{ start }} to {{ end }})</h3>
 
 <form class="row gy-2 gx-2 align-items-center mb-3">
   <div class="col-auto">
-    <select name="period" class="form-select" onchange="this.form.submit()">
-      {% for opt in ['day','week','month','year'] %}
-      <option value="{{ opt }}" {{ 'selected' if opt==period }}>{{ opt|title }}</option>
-      {% endfor %}
-    </select>
+    <input type="date" name="start" class="form-control"
+           value="{{ start }}" max="{{ end }}"
+           onchange="this.form.submit()">
   </div>
+  <div class="col-auto">
+    <input type="date" name="end" class="form-control"
+           value="{{ end }}" min="{{ start }}"
+           onchange="this.form.submit()">
+  </div>
+
   <div class="col-auto">
     <select name="breakdown" class="form-select" onchange="this.form.submit()">
       <option value="summary"  {{ 'selected' if breakdown=='summary'  }}>Summary</option>
@@ -20,14 +24,16 @@
 
   <input type="hidden" name="export" id="export">
   <div class="col-auto">
-    <button type="button" onclick="exportCSV()"  class="btn btn-outline-secondary">CSV</button>
-    <button type="button" onclick="exportPDF()"  class="btn btn-outline-secondary">PDF</button>
+    <button type="button" class="btn btn-outline-secondary"
+            onclick="document.getElementById('export').value='csv';this.form.submit();">
+      CSV
+    </button>
   </div>
 </form>
 
 <script>
+// Removed exportPDF function since PDF button was removed
 function exportCSV(){ document.getElementById('export').value='csv';  document.forms[0].submit(); }
-function exportPDF(){ document.getElementById('export').value='pdf';  document.forms[0].submit(); }
 </script>
 
 {% if breakdown == 'summary' %}

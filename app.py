@@ -5,7 +5,7 @@ from functools import wraps
 import bcrypt, os
 from forms import LoginForm 
 
-from datetime import date, datetime
+from datetime import date, datetime,timedelta
 from config import Config
 from models import db, Product, Sale, User, PriceChange, LogEntry, Shift
 from forms import AddStockForm, RecordSaleForm, NewUserForm, ResetPwdForm, EditProductForm, EditSaleForm
@@ -554,98 +554,133 @@ def inject_shift_totals():
         shift = qty = rev = None
     return dict(open_shift=shift, shift_qty=qty or 0, shift_rev=rev or 0.0)
 
+DATE_FMT = "%Y-%m-%d"
+def _aggregate_sales_range(start: date, end: date):
+    """Return list[dict] bucketed by *day* between start and end (inclusive)."""
+    rows = (
+        db.session.query(
+            Sale.date.label("bucket"),
+            func.sum(Sale.qty_sold).label("qty"),
+            func.sum(
+                Sale.qty_sold *
+                func.coalesce(Sale.unit_price, Product.selling_price)
+            ).label("rev"),
+            func.sum(Sale.qty_sold * Product.cost_price).label("cost")
+        )
+        .join(Product)
+        .filter(Sale.date.between(start, end))
+        .group_by(Sale.date)
+        .order_by(Sale.date)
+        .all()
+    )
+    return [dict(bucket=r.bucket, qty=r.qty, rev=float(r.rev), cost=float(r.cost))
+            for r in rows]
 
-def _aggregate_sales(period):
-    """
-    period = 'day' | 'week' | 'month' | 'year'
-    returns list of dicts: [{'bucket': '2025-06-14', 'qty': 34, 'rev': 421.00, 'cost': 287.0}]
-    """
-    bucket_expr = {
-        'day':   func.date(Sale.date),                        # 2025-06-14
-        'week':  func.date_trunc('week', Sale.date),          # 2025-06-09 00:00
-        'month': func.date_trunc('month', Sale.date),         # 2025-06-01 00:00
-        'year':  func.date_trunc('year', Sale.date),          # 2025-01-01 00:00
-    }[period]
+def _sales_between(start: date, end: date):
+    """Return list[dict] bucketed by day within [start, end]."""
+    rows = (
+        db.session.query(
+            Sale.date.label("bucket"),
+            func.sum(Sale.qty_sold).label("qty"),
+            func.sum(
+                Sale.qty_sold *
+                func.coalesce(Sale.unit_price, Product.selling_price)
+            ).label("rev"),
+            func.sum(Sale.qty_sold * Product.cost_price).label("cost"))
+        .join(Product)
+        .filter(Sale.date.between(start, end))
+        .group_by("bucket")
+        .order_by("bucket")
+        .all()
+    )
+    return [dict(bucket=r.bucket, qty=r.qty,
+                 rev=float(r.rev), cost=float(r.cost)) for r in rows]
 
-    rows = (db.session.query(bucket_expr.label('bucket'),
-                             func.sum(Sale.qty_sold).label('qty'),
-                             func.sum(Sale.qty_sold * Product.selling_price).label('rev'),
-                             func.sum(Sale.qty_sold * Product.cost_price).label('cost'))
-            .join(Product)
-            .group_by('bucket')
-            .order_by('bucket')
-            .all())
-    return [{'bucket': r.bucket.date() if isinstance(r.bucket, datetime) else r.bucket,
-             'qty': int(r.qty or 0),
-             'rev': float(r.rev or 0),
-             'cost': float(r.cost or 0)} for r in rows]
 
-@app.route('/reports/sales-summary')
+@app.route("/reports/sales-summary")
 @login_required
 @manager_required
 def sales_summary():
-    period     = request.args.get('period', 'day')          # day|week|month|year
-    breakdown  = request.args.get('breakdown', 'summary')   # summary|category|product
-    export     = request.args.get('export')                 # csv|pdf
 
-    # 1-A  aggregate once
-    rows = _aggregate_sales(period)                         # list of {bucket, qty, rev, cost}
+    # ── 1. Parse date-range  ───────────────────────────────────────────
+    try:
+        start = datetime.strptime(request.args.get("start"), DATE_FMT).date()
+        end   = datetime.strptime(request.args.get("end"),   DATE_FMT).date()
+    except (TypeError, ValueError):
+        # fallback to current month-to-date
+        today = date.today()
+        start = today.replace(day=1)
+        end   = today
 
+    if start > end:                              # auto-swap accidental order
+        start, end = end, start
+
+    # ── 2. Other query-string controls  ────────────────────────────────
+    breakdown = request.args.get("breakdown", "summary")     # summary|category|product
+    export    = request.args.get("export")                   # csv|pdf (pdf unused)
+
+    # ── 3. Aggregate once per day inside the range  ────────────────────
+    rows = _aggregate_sales_range(start, end)                # list of dicts
     gp_data = [{
-        'bucket': r['bucket'],
-        'qty':    r['qty'],
-        'rev':    r['rev'],
-        'cost':   r['cost'],
-        'gp':     r['rev'] - r['cost']
+        **r,
+        "gp": r["rev"] - r["cost"]
     } for r in rows]
 
-    # 1-B  derive view-specific structures
-    if breakdown == 'category':
+    # ── 4. Derive view-specific tables / charts  ───────────────────────
+    if breakdown == "category":
         view_rows = (
-            db.session.query(Product.category,
-                             func.sum(Sale.qty_sold*Product.selling_price).label('rev'))
+            db.session.query(
+                Product.category,
+                func.sum(Sale.qty_sold * Sale.unit_price)
+                    .label("rev"))
             .join(Product)
-            .group_by(Product.category).all()
+            .filter(Sale.date.between(start, end))
+            .group_by(Product.category)
+            .all()
         )
         chart_labels = [c for c, _ in view_rows]
         chart_values = [float(r) for _, r in view_rows]
 
-    elif breakdown == 'product':
+    elif breakdown == "product":
         view_rows = (
-            db.session.query(Product.name,
-                             func.sum(Sale.qty_sold).label('qty'),
-                             func.sum(Sale.qty_sold*Product.selling_price).label('rev'))
+            db.session.query(
+                Product.name,
+                func.sum(Sale.qty_sold).label("qty"),
+                func.sum(Sale.qty_sold * Sale.unit_price).label("rev"))
             .join(Product)
+            .filter(Sale.date.between(start, end))
             .group_by(Product.name)
-            .order_by(func.sum(Sale.qty_sold*Product.selling_price).desc())
-            .limit(50)    # top 50 rows
+            .order_by(func.sum(Sale.qty_sold * Sale.unit_price).desc())
+            .limit(50)
             .all()
         )
-        chart_labels = [n for n, _, _ in view_rows][:10]     # top10 bars
+        chart_labels = [n for n, _, _ in view_rows][:10]
         chart_values = [float(r) for _, _, r in view_rows][:10]
 
-    else:  # 'summary'
-        view_rows = gp_data 
-        chart_labels = [r['bucket'] for r in gp_data]
-        chart_values = [r['rev'] for r in gp_data]
+    else:                                          # summary
+        view_rows    = gp_data
+        chart_labels = [r["bucket"] for r in gp_data]
+        chart_values = [r["rev"]   for r in gp_data]
 
-    # 1-C  handle CSV export
-    if export == 'csv':
+    # ── 5. CSV export (same range & breakdown)  ────────────────────────
+    if export == "csv":
         df = pd.DataFrame(view_rows)
+        filename = f"sales_{breakdown}_{start}_{end}.csv"
         return send_file(BytesIO(df.to_csv(index=False).encode()),
-                         'text/csv',
-                         download_name=f'sales_{breakdown}_{period}.csv',
+                         "text/csv",
+                         download_name=filename,
                          as_attachment=True)
 
+    # ── 6. Render template  ────────────────────────────────────────────
     return render_template(
-        'sales_summary.html',
-        period=period,
+        "sales_summary.html",
+        start=start, end=end,
         breakdown=breakdown,
-        data=gp_data,          # now defined
+        data=gp_data,
         rows=view_rows,
         chart_labels=chart_labels,
         chart_values=chart_values,
-        currency=app.config['CURRENCY_SYMBOL']
+        currency=app.config["CURRENCY_SYMBOL"]
     )
 
 
