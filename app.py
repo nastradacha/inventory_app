@@ -631,22 +631,27 @@ def sales_summary():
         view_rows = (
             db.session.query(
                 Product.category,
-                func.sum(Sale.qty_sold * Sale.unit_price)
-                    .label("rev"))
+                func.coalesce(
+                    func.sum(Sale.qty_sold * Sale.unit_price), 0.0
+                ).label("rev")
+            )
             .join(Product)
             .filter(Sale.date.between(start, end))
             .group_by(Product.category)
             .all()
         )
         chart_labels = [c for c, _ in view_rows]
-        chart_values = [float(r) for _, r in view_rows]
+        chart_values = [float(r or 0) for _, r in view_rows]
 
     elif breakdown == "product":
         view_rows = (
             db.session.query(
                 Product.name,
                 func.sum(Sale.qty_sold).label("qty"),
-                func.sum(Sale.qty_sold * Sale.unit_price).label("rev"))
+                func.coalesce(                      # ← NEW
+                    func.sum(Sale.qty_sold * Sale.unit_price), 0.0
+            ).label("rev")
+        )
             .join(Product)
             .filter(Sale.date.between(start, end))
             .group_by(Product.name)
@@ -655,7 +660,7 @@ def sales_summary():
             .all()
         )
         chart_labels = [n for n, _, _ in view_rows][:10]
-        chart_values = [float(r) for _, _, r in view_rows][:10]
+        chart_values = [float(r or 0) for _, _, r in view_rows][:10]
 
     else:                                          # summary
         view_rows    = gp_data
