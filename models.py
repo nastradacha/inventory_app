@@ -30,6 +30,7 @@ class Sale(db.Model):
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)
     date = db.Column(db.Date, default=date.today, nullable=False)
     qty_sold = db.Column(db.Integer, nullable=False)
+    unit_price = db.Column(db.Float)
 
     product = db.relationship('Product', backref=db.backref('sales', lazy=True))
 
