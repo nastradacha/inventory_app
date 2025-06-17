@@ -15,6 +15,7 @@ from sqlalchemy import func, cast, Date
 import pandas as pd
 from io import StringIO
 from io import BytesIO
+from flask_migrate import Migrate
 
 # import weasyprint
 
@@ -26,6 +27,7 @@ app.config.from_object(Config)
 csrf = CSRFProtect(app)
 
 db.init_app(app)
+migrate = Migrate(app, db)
 
 def log(action, details):
     db.session.add(
