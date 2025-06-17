@@ -1,0 +1,8 @@
+services:
+  - type: web
+    name: inventory-app-prod
+    env: python
+    buildCommand: |
+      pip install -r requirements.txt
+      flask db upgrade          # ← run migrations on the Render build machine
+    startCommand: gunicorn app:app
