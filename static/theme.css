@@ -1,0 +1,50 @@
+:root {
+  /* colour palette – tweak anytime */
+  --bs-primary: #0061f2;
+  --bs-secondary: #6c757d;
+  --bs-success: #00b894;
+  --bs-info: #17a2b8;
+  --bs-warning: #f39c12;
+  --bs-danger: #e74c3c;
+  --bs-light: #f8f9fa;
+  --bs-dark: #343a40;
+
+  /* global radius & shadow */
+  --st-btn-radius: .5rem;
+  --st-border-radius: .5rem;
+  --st-shadow-sm: 0 .125rem .25rem rgba(0,0,0,.075);
+}
+
+/* modern table look */
+.table {
+  border-radius: var(--st-border-radius);
+  overflow: hidden; /* keeps radius */
+}
+.table thead th {
+  background-color: var(--bs-light);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+.table-hover tbody tr:hover {
+  background-color: rgba(0,0,0,.03);
+}
+
+/* buttons */
+.btn {
+  border-radius: var(--st-btn-radius);
+}
+
+body {
+  font-family: 'Inter', 'Segoe UI', Tahoma, Arial, sans-serif;
+}
+
+.card-rounded,
+.table-rounded {
+  border-radius: var(--st-border-radius) !important;
+  box-shadow: var(--st-shadow-sm);
+}
+
+.toast-container {
+  z-index: 1090; /* above offcanvas */
+}

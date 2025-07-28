@@ -13,19 +13,33 @@
   </div>
 </form>
 
-<table class="table table-sm"><thead><tr><th>#</th><th>Product</th><th class="text-end">Qty</th><th></th></tr></thead><tbody>
-{% for sale, prod in sales %}
-<tr>
-  <td>{{ sale.id }}</td>
-  <td>{{ prod.name }}</td>
-  <td class="text-end">{{ sale.qty_sold }}</td>
-  <td class="text-end">
-    <a class="btn btn-sm btn-primary" href="{{ url_for('edit_sale', sid=sale.id) }}">Edit</a>
-    <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#void{{ sale.id }}">Void</button>
-  </td>
-</tr>
-{% endfor %}
-</tbody></table>
+<div class="table-responsive">
+  <table class="table table-sm">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Product</th>
+        <th class="text-end">Qty</th>
+        <th class="text-end">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for sale, prod in sales %}
+      <tr>
+        <td data-label="ID">{{ sale.id }}</td>
+        <td data-label="Product">{{ prod.name }}</td>
+        <td class="text-end" data-label="Quantity">{{ sale.qty_sold }}</td>
+        <td class="text-end" data-label="Actions">
+          <div class="btn-group btn-group-sm" role="group">
+            <a class="btn btn-primary btn-sm" href="{{ url_for('edit_sale', sid=sale.id) }}">Edit</a>
+            <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#void{{ sale.id }}">Void</button>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 
 {% for sale, prod in sales %}
 <!-- Modal for Void Confirmation -->

@@ -1,0 +1,6 @@
+name,category,cost_price,selling_price,quantity,safety_stock,expiry_date
+Paracetamol 500mg,Pain Relief,2.50,3.50,100,20,31/12/2025
+Amoxicillin 250mg,Antibiotics,8.00,12.00,50,10,30/06/2025
+Vitamin C 1000mg,Vitamins,15.00,22.00,75,15,31/12/2025
+Ibuprofen 400mg,Pain Relief,4.00,6.00,80,15,31/12/2025
+Metformin 500mg,Diabetes,3.50,5.50,120,25,31/12/2025

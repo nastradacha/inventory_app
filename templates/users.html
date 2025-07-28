@@ -8,12 +8,11 @@
     <td>{{ u.role }}</td>
     <td class="text-end">
       <form action="{{ url_for('reset_pwd', user_id=u.id) }}" method="post" class="d-inline">
-        {# hidden CSRF token so it never shows up in the cell #}
-        <input type="hidden" name="password" value="changeme123">
-        <button class="btn btn-sm btn-warning"
-                onclick="return confirm('Reset password for {{ u.username }} to changeme123 ?')">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="btn btn-sm btn-warning" data-confirm="Reset password for {{ u.username }} to changeme123?" data-toggle="modal" data-target="#confirmModal">
           Reset → changeme123
         </button>
+        <input type="hidden" name="password" value="changeme123">
       </form>
     </td>
   </tr>
@@ -21,11 +20,33 @@
 </tbody></table>
 <hr>
 <h4>Add New User</h4>
-<form method="post" class="row g-2" novalidate>
+<form method="post" class="row g-3" novalidate id="user-form">
   {{ form.hidden_tag() }}
-  <div class="col-md-3">{{ form.username.label }}{{ form.username(class_='form-control') }}</div>
-  <div class="col-md-3">{{ form.password.label }}{{ form.password(class_='form-control') }}</div>
-  <div class="col-md-3">{{ form.role.label }}{{ form.role(class_='form-control') }}</div>
-  <div class="col-md-3 align-self-end"><button class="btn btn-success w-100">Create User</button></div>
+  <div class="col-md-4 form-floating">
+    {{ form.username(class_='form-control' + (' is-invalid' if form.username.errors else ''), placeholder='Username') }}
+    {{ form.username.label(class_='form-label') }}
+    {% if form.username.errors %}<div class="text-danger small">{{ form.username.errors[0] }}</div>{% endif %}
+  </div>
+  <div class="col-md-4 form-floating">
+    {{ form.password(class_='form-control' + (' is-invalid' if form.password.errors else ''), placeholder='Password') }}
+    {{ form.password.label(class_='form-label') }}
+    {% if form.password.errors %}<div class="text-danger small">{{ form.password.errors[0] }}</div>{% endif %}
+  </div>
+  <div class="col-md-4">
+    {{ form.role.label(class_='form-label') }}
+    {{ form.role(class_='form-select') }}
+  </div>
+  <div class="col-12"><button id="createBtn" class="btn btn-success" data-testid="save-user"><span class="spinner-border spinner-border-sm d-none me-1" role="status" aria-hidden="true"></span> Create User</button></div>
 </form>
+{% endblock %}
+{% block scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('user-form').addEventListener('submit', () => {
+      const btn = document.getElementById('createBtn');
+      btn.disabled = true;
+      btn.querySelector('.spinner-border').classList.remove('d-none');
+    });
+  });
+</script>
 {% endblock %}

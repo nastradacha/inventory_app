@@ -3,7 +3,7 @@
 <h3>Product List</h3>
 
 <!-- Sorting Controls -->
-<div class="d-flex justify-content-between mb-3">
+<div class="d-flex flex-column flex-md-row justify-content-between mb-3 gap-2">
   <div>
     <div class="btn-group">
       <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
@@ -38,43 +38,48 @@
 </div>
 
 <!-- Products Table -->
-<table class="table table-sm">
-  <thead>
-    <tr>
-      <th class="{{ 'sort-asc' if sort_by == 'name' and sort_order == 'asc' else 'sort-desc' if sort_by == 'name' and sort_order == 'desc' else '' }}">
-        <a href="{{ url_for('products', sort='name', order='asc' if sort_by != 'name' or sort_order == 'desc' else 'desc', search=search_query) }}" class="text-decoration-none text-dark">
-          Name
-        </a>
-      </th>
-      <th class="text-end {{ 'sort-asc' if sort_by == 'qty' and sort_order == 'asc' else 'sort-desc' if sort_by == 'qty' and sort_order == 'desc' else '' }}">
-        <a href="{{ url_for('products', sort='qty', order='asc' if sort_by != 'qty' or sort_order == 'desc' else 'desc', search=search_query) }}" class="text-decoration-none text-dark">
-          Qty
-        </a>
-      </th>
-      <th class="text-end {{ 'sort-asc' if sort_by == 'price' and sort_order == 'asc' else 'sort-desc' if sort_by == 'price' and sort_order == 'desc' else '' }}">
-        <a href="{{ url_for('products', sort='price', order='asc' if sort_by != 'price' or sort_order == 'desc' else 'desc', search=search_query) }}" class="text-decoration-none text-dark">
-          Selling Price
-        </a>
-      </th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for p in items %}
-    <tr>
-      <td>{{ p.name }}</td>
-      <td class="text-end">{{ p.qty_at_hand }}</td>
-      <td class="text-end">{{ currency }}{{ p.selling_price }}</td>
-      <td class="text-end">
-        <a class="btn btn-sm btn-primary" href="{{ url_for('edit_product', pid=p.id) }}">Edit</a>
-        <form action="{{ url_for('delete_product', pid=p.id) }}" method="post" class="d-inline">
-          <button class="btn btn-sm btn-danger" onclick="return confirm('Delete?')">Delete</button>
-        </form>
-      </td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+<div class="table-responsive">
+  <table class="table table-sm table-hover table-striped align-middle">
+    <thead>
+      <tr>
+        <th class="{{ 'sort-asc' if sort_by == 'name' and sort_order == 'asc' else 'sort-desc' if sort_by == 'name' and sort_order == 'desc' else '' }}">
+          <a href="{{ url_for('products', sort='name', order='asc' if sort_by != 'name' or sort_order == 'desc' else 'desc', search=search_query) }}" class="text-decoration-none text-dark">
+            Name
+          </a>
+        </th>
+        <th class="text-end {{ 'sort-asc' if sort_by == 'qty' and sort_order == 'asc' else 'sort-desc' if sort_by == 'qty' and sort_order == 'desc' else '' }}">
+          <a href="{{ url_for('products', sort='qty', order='asc' if sort_by != 'qty' or sort_order == 'desc' else 'desc', search=search_query) }}" class="text-decoration-none text-dark">
+            Qty
+          </a>
+        </th>
+        <th class="text-end {{ 'sort-asc' if sort_by == 'price' and sort_order == 'asc' else 'sort-desc' if sort_by == 'price' and sort_order == 'desc' else '' }}">
+          <a href="{{ url_for('products', sort='price', order='asc' if sort_by != 'price' or sort_order == 'desc' else 'desc', search=search_query) }}" class="text-decoration-none text-dark">
+            Selling Price
+          </a>
+        </th>
+        <th class="text-end">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in items %}
+      <tr>
+        <td data-label="Product">{{ p.name }}</td>
+        <td class="text-end" data-label="Quantity">{{ p.qty_at_hand }}</td>
+        <td class="text-end" data-label="Price">{{ currency }}{{ p.selling_price }}</td>
+        <td class="text-end" data-label="Actions">
+          <div class="btn-group btn-group-sm" role="group">
+            <a class="btn btn-primary" href="{{ url_for('edit_product', pid=p.id) }}"><i class="bi bi-pencil me-1"></i>Edit</a>
+            <form action="{{ url_for('delete_product', pid=p.id) }}" method="post" class="d-inline">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button class="btn btn-danger" data-confirm="Delete this product?" data-testid="delete-product"><i class="bi bi-trash me-1"></i>Delete</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 
 <!-- Pagination -->
 {% if pagination and pagination.pages > 1 %}
