@@ -343,19 +343,39 @@ def download_batch_template(format):
     ]
     
     df = pd.DataFrame(template_data)
-    
-    output = io.BytesIO()
-    with pd.ExcelWriter(output, engine='openpyxl') as writer:
-        df.to_excel(writer, index=False, sheet_name='Inventory Template')
-    
-    output.seek(0)
-    
-    return send_file(
-        io.BytesIO(output.getvalue()),
-        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        as_attachment=True,
-        download_name=f'inventory_template_{datetime.now().strftime("%Y%m%d")}.xlsx'
-    )
+
+    # If CSV requested or openpyxl not available, serve CSV
+    if format.lower() == 'csv':
+        csv_bytes = df.to_csv(index=False).encode()
+        return send_file(
+            io.BytesIO(csv_bytes),
+            mimetype='text/csv',
+            as_attachment=True,
+            download_name=f'inventory_template_{datetime.now().strftime("%Y%m%d")}.csv'
+        )
+
+    # Otherwise try to serve Excel
+    try:
+        import openpyxl  # noqa: F401 – required by pandas
+        output = io.BytesIO()
+        with pd.ExcelWriter(output, engine='openpyxl') as writer:
+            df.to_excel(writer, index=False, sheet_name='Inventory Template')
+        output.seek(0)
+        return send_file(
+            io.BytesIO(output.getvalue()),
+            mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            as_attachment=True,
+            download_name=f'inventory_template_{datetime.now().strftime("%Y%m%d")}.xlsx'
+        )
+    except ModuleNotFoundError:
+        # openpyxl not installed on server – fall back to CSV
+        csv_bytes = df.to_csv(index=False).encode()
+        return send_file(
+            io.BytesIO(csv_bytes),
+            mimetype='text/csv',
+            as_attachment=True,
+            download_name=f'inventory_template_{datetime.now().strftime("%Y%m%d")}.csv'
+        )
 
 @batch_inventory_bp.route('/batch-inventory/download-example')
 @login_required
@@ -384,16 +404,26 @@ def download_example_data():
         return download_batch_template()
     
     df = pd.DataFrame(example_data)
-    
-    output = io.BytesIO()
-    with pd.ExcelWriter(output, engine='openpyxl') as writer:
-        df.to_excel(writer, index=False, sheet_name='Current Inventory')
-    
-    output.seek(0)
-    
-    return send_file(
-        io.BytesIO(output.getvalue()),
-        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        as_attachment=True,
-        download_name=f'current_inventory_{datetime.now().strftime("%Y%m%d")}.xlsx'
-    )
+
+    if request.args.get('format','xlsx').lower() == 'csv':
+        csv_bytes = df.to_csv(index=False).encode()
+        return send_file(io.BytesIO(csv_bytes),
+                         mimetype='text/csv',
+                         as_attachment=True,
+                         download_name=f'inventory_example_{datetime.now().strftime("%Y%m%d")}.csv')
+    try:
+        import openpyxl  # noqa: F401
+        output = io.BytesIO()
+        with pd.ExcelWriter(output, engine='openpyxl') as writer:
+            df.to_excel(writer, index=False, sheet_name='Example Data')
+        output.seek(0)
+        return send_file(io.BytesIO(output.getvalue()),
+                         mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                         as_attachment=True,
+                         download_name=f'inventory_example_{datetime.now().strftime("%Y%m%d")}.xlsx')
+    except ModuleNotFoundError:
+        csv_bytes = df.to_csv(index=False).encode()
+        return send_file(io.BytesIO(csv_bytes),
+                         mimetype='text/csv',
+                         as_attachment=True,
+                         download_name=f'inventory_example_{datetime.now().strftime("%Y%m%d")}.csv')
