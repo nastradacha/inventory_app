@@ -6,9 +6,9 @@
   {{ form.hidden_tag() }}
 
   <!-- Product name field rendered as Select2 -->
-  <div class="col-md-6">
-    <label class="form-label" for="name-select">Product name</label>
-    <select id="name-select" name="name" class="form-select" style="width:100%">
+  <div class="col-md-6 mb-3">
+    <label for="name-select" class="form-label">Product name</label>
+    <select id="name-select" name="name" class="form-select select2" style="width:100%" data-placeholder="Product name">
       <option></option>  <!-- blank placeholder -->
       {% for n in all_names %}
         <option value="{{ n }}">{{ n }}</option>
@@ -27,26 +27,32 @@
 
   <!-- Render the rest of the fields -->
   {% for field in form if field.name not in ['csrf_token', 'name', 'submit'] %}
-    <div class="col-md-6">
+    <div class="col-md-6 form-floating">
+      {{ field(class_='form-control' + (' is-invalid' if field.errors else ''), placeholder=field.label.text) }}
       {{ field.label(class_='form-label') }}
-      {{ field(class_='form-control') }}
       {% if field.errors %}
         <div class="text-danger small">{{ field.errors[0] }}</div>
       {% endif %}
     </div>
   {% endfor %}
 
-  <div class="col-12"><button class="btn btn-success">Submit</button></div>
+  <div class="col-12"><button id="submitBtn" class="btn btn-success" data-testid="add-stock"><span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span> Submit</button></div>
 </form>
 {% endblock %}
 
 {% block scripts %}
 <script>
 $(function () {
-  $('#name-select').select2({
+  $('.select2').select2({
     placeholder: 'Type or pick product',
     allowClear: true,
     tags: true           // lets user add a brand-new name
+  });
+
+  // spinner on submit
+  $('form').on('submit', function(){
+    $('#submitBtn').prop('disabled', true);
+    $('#submitBtn .spinner-border').removeClass('d-none');
   });
 });
 </script>

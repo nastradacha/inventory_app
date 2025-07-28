@@ -8,7 +8,7 @@ from forms import LoginForm
 from datetime import date, datetime,timedelta
 from config import Config
 from models import db, Product, Sale, User, PriceChange, LogEntry, Shift
-from forms import AddStockForm, RecordSaleForm, NewUserForm, ResetPwdForm, EditProductForm, EditSaleForm
+from forms import AddStockForm, RecordSaleForm, NewUserForm, ResetPwdForm, EditProductForm, EditSaleForm, BatchInventoryForm
 from rapidfuzz import fuzz
 
 from sqlalchemy import func, cast, Date
@@ -16,6 +16,7 @@ import pandas as pd
 from io import StringIO
 from io import BytesIO
 from flask_migrate import Migrate
+from batch_inventory_routes import batch_inventory_bp
 
 # import weasyprint
 
@@ -25,6 +26,9 @@ app.config.from_object(Config)
 
 # Enable CSRF protection for every POST form
 csrf = CSRFProtect(app)
+
+# Register blueprints
+app.register_blueprint(batch_inventory_bp)
 
 db.init_app(app)
 migrate = Migrate(app, db)
@@ -242,15 +246,33 @@ def confirm_add():
             # rebuild form object from stored data
             form_data = pending
             # Either treat as restock or create new product (same logic you already have)
+            # ensure expiry_date is a Python date object
+            expiry_val = None
+            if form_data.get('expiry_date'):
+                expiry_raw = form_data['expiry_date']
+                if isinstance(expiry_raw, str) and expiry_raw:
+                    try:
+                        expiry_val = date.fromisoformat(expiry_raw)
+                    except ValueError:
+                        # fallback: try dd/mm/YYYY format
+                        try:
+                            expiry_val = datetime.strptime(expiry_raw, '%d/%m/%Y').date()
+                        except ValueError:
+                            expiry_val = None
+                elif isinstance(expiry_raw, date):
+                    expiry_val = expiry_raw
+
             p = Product.query.filter_by(name=form_data['name']).first()
             if p:
                 p.qty_at_hand += int(form_data['quantity'])
                 p.initial_qty += int(form_data['quantity'])
+                if expiry_val:
+                    p.expiry_date = expiry_val
             else:
                 p = Product(
                     name=form_data['name'],
                     category=form_data['category'],
-                    expiry_date=form_data['expiry_date'],
+                    expiry_date=expiry_val,
                     cost_price=float(form_data['cost_price']),
                     selling_price=float(form_data['selling_price']),
                     initial_qty=int(form_data['quantity']),
@@ -383,6 +405,11 @@ def edit_product(pid):
 @manager_required
 def delete_product(pid):
     p = Product.query.get_or_404(pid)
+    from models import Sale
+    if Sale.query.filter_by(product_id=p.id).first():
+        flash('Cannot delete: product has sales history. Consider archiving instead.', 'warning')
+        return redirect(url_for('products'))
+
     db.session.delete(p)
     db.session.commit()
     flash('Product deleted', 'info')

@@ -1,22 +1,32 @@
 {% extends 'base.html' %}
 {% block content %}
 <h3>Inventory Valuation</h3>
-<table class="table table-sm">
-  <thead><tr><th>Product</th><th class="text-end">Qty</th><th class="text-end">Cost Value</th><th class="text-end">Sell Value</th></tr></thead>
-  <tbody>
-  {% for p,c_val,s_val in items %}
-    <tr>
-      <td>{{ p.name }}</td>
-      <td class="text-end">{{ p.qty_at_hand }}</td>
-      <td class="text-end">{{ currency }}{{ '%0.2f' % c_val }}</td>
-      <td class="text-end">{{ currency }}{{ '%0.2f' % s_val }}</td>
-    </tr>
-  {% endfor %}
-  <tr class="table-secondary fw-bold">
-    <td>Total</td><td></td>
-    <td class="text-end">{{ currency }}{{ '%0.2f' % totals.cost }}</td>
-    <td class="text-end">{{ currency }}{{ '%0.2f' % totals.sell }}</td>
-  </tr>
-  </tbody>
-</table>
+<div class="table-responsive">
+  <table class="table table-sm">
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th class="text-end">Qty</th>
+        <th class="text-end">Cost Value</th>
+        <th class="text-end">Sell Value</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p,c_val,s_val in items %}
+        <tr>
+          <td data-label="Product">{{ p.name }}</td>
+          <td class="text-end" data-label="Quantity">{{ p.qty_at_hand }}</td>
+          <td class="text-end" data-label="Cost">{{ currency }}{{ '%0.2f' % c_val }}</td>
+          <td class="text-end" data-label="Sell">{{ currency }}{{ '%0.2f' % s_val }}</td>
+        </tr>
+      {% endfor %}
+      <tr class="table-secondary fw-bold">
+        <td data-label="Total">Total</td>
+        <td></td>
+        <td class="text-end" data-label="Cost Total">{{ currency }}{{ '%0.2f' % totals.cost }}</td>
+        <td class="text-end" data-label="Sell Total">{{ currency }}{{ '%0.2f' % totals.sell }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 {% endblock %}

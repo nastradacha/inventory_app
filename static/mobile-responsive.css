@@ -1,0 +1,225 @@
+/* Mobile Responsive Styles for StoreTrack */
+
+/* Base mobile viewport setup */
+@media (max-width: 576px) {
+  .container-fluid {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+  
+  .navbar-brand {
+    font-size: 1.1rem;
+  }
+  
+  .table-responsive {
+    font-size: 0.875rem;
+  }
+  
+  .btn {
+    font-size: 0.875rem;
+    padding: 0.375rem 0.75rem;
+  }
+}
+
+/* Tablet viewport */
+@media (max-width: 768px) {
+  .navbar-nav {
+    margin-top: 1rem;
+  }
+  
+  .nav-link {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9rem;
+  }
+  
+  .dropdown-menu {
+    font-size: 0.9rem;
+  }
+  
+  .card {
+    margin-bottom: 1rem;
+  }
+  
+  .card-body {
+    padding: 1rem;
+  }
+  
+  .form-control {
+    font-size: 0.9rem;
+  }
+}
+
+/* Mobile form improvements */
+@media (max-width: 576px) {
+  .form-group {
+    margin-bottom: 0.75rem;
+  }
+  
+  .form-label {
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+  }
+  
+  .form-control {
+    font-size: 1rem; /* Prevents zoom on iOS */
+    padding: 0.5rem;
+  }
+  
+  .btn-block-mobile {
+    display: block;
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+  
+  .table-responsive {
+    border-radius: 0;
+  }
+  
+  .table td, .table th {
+    padding: 0.5rem;
+  }
+}
+
+/* Dashboard mobile cards */
+@media (max-width: 768px) {
+  .row-cols-md-4 {
+    row-gap: 1rem;
+  }
+  
+  .col-md-3 {
+    margin-bottom: 1rem;
+  }
+  
+  .card-title {
+    font-size: 1.1rem;
+  }
+  
+  .card-text {
+    font-size: 1.25rem;
+  }
+}
+
+/* Mobile navigation improvements */
+.navbar-toggler {
+  border: none;
+  padding: 0.25rem 0.5rem;
+}
+
+.navbar-toggler:focus {
+  box-shadow: none;
+}
+
+/* Mobile table improvements */
+/* Optional stacked-table layout (not default) */
+@media (max-width: 576px) {
+  .stacked-table thead {
+    display: none;
+  }
+  .stacked-table tr {
+    display: block;
+    margin-bottom: 1rem;
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+  }
+  .stacked-table td {
+    display: block;
+    text-align: right;
+    padding: 0.5rem;
+    border: none;
+    position: relative;
+  }
+  .stacked-table td::before {
+    content: attr(data-label);
+    float: left;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+  }
+}
+
+/* Mobile spacing utilities */
+.mobile-mb-1 {
+  margin-bottom: 0.5rem;
+}
+
+.mobile-p-1 {
+  padding: 0.5rem;
+}
+
+/* Touch-friendly buttons */
+.btn-mobile {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Mobile typography */
+.mobile-text-small {
+  font-size: 0.875rem;
+}
+
+.mobile-text-large {
+  font-size: 1.1rem;
+}
+
+/* Mobile card improvements */
+.card-mobile {
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border: none;
+}
+
+/* Mobile form layout */
+.form-row-mobile {
+  margin-bottom: 0.75rem;
+}
+
+/* Mobile alerts */
+.alert-mobile {
+  margin: 0.5rem 0;
+  font-size: 0.875rem;
+}
+
+/* Mobile progress indicators */
+.progress-mobile {
+  height: 0.5rem;
+}
+
+/* Mobile batch upload specific */
+@media (max-width: 576px) {
+  .batch-upload-section {
+    padding: 1rem;
+  }
+  
+  .batch-upload-buttons .btn {
+    margin-bottom: 0.5rem;
+    width: 100%;
+  }
+  
+  .template-download-buttons .btn {
+    margin-bottom: 0.5rem;
+    width: 100%;
+  }
+}
+
+/* Mobile dashboard improvements */
+@media (max-width: 576px) {
+  .dashboard-stats .col-6 {
+    padding: 0.25rem;
+  }
+  
+  .dashboard-card {
+    margin-bottom: 0.5rem;
+  }
+}
+
+/* Mobile navigation dropdown */
+@media (max-width: 576px) {
+  .navbar-nav .dropdown-menu {
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .dropdown-item {
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+  }
+}

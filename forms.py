@@ -1,5 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, FloatField, DateField, SelectField, SubmitField
+from flask_wtf.file import FileField, FileRequired, FileAllowed
+from wtforms import StringField, IntegerField, FloatField, DateField, SelectField, SubmitField, BooleanField
 from wtforms.validators import DataRequired, NumberRange,  ValidationError
 from models import Product
 
@@ -54,3 +55,17 @@ class LoginForm(FlaskForm):
 class EditSaleForm(FlaskForm):
     qty_sold = IntegerField('Quantity', validators=[NumberRange(min=1)])
     submit   = SubmitField('Save')
+
+class BatchInventoryForm(FlaskForm):
+    spreadsheet_file = FileField('Upload Spreadsheet', validators=[
+        FileRequired(),
+        FileAllowed(['csv', 'xlsx', 'xls'], 'Only CSV or Excel files are allowed!')
+    ])
+    update_mode = SelectField('Update Mode', choices=[
+        ('add_stock', 'Add to existing stock'),
+        ('replace_stock', 'Replace current stock'),
+        ('update_prices', 'Update prices only'),
+        ('full_update', 'Full product update')
+    ], default='add_stock')
+    skip_errors = BooleanField('Skip rows with errors and continue', default=True)
+    submit = SubmitField('Upload and Preview Changes')

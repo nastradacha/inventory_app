@@ -1,14 +1,14 @@
 {% extends 'base.html' %}
 {% block content %}
 <h3>Edit Product</h3>
-<form method="post" class="row g-3">
+<form method="post" class="row g-3" novalidate id="product-form">
   {{ form.hidden_tag() }}
   {% for field in form if field.name!='csrf_token' and field.type!='SubmitField' %}
-  <div class="col-md-6">
+  <div class="col-md-6 form-floating">
+    {{ field(class_='form-control' + (' is-invalid' if field.errors else ''), placeholder=field.label.text) }}
     {{ field.label(class_='form-label') }}
-    {{ field(class_='form-control') }}
   </div>
   {% endfor %}
-  <div class="col-12"><button class="btn btn-success">Save</button></div>
+  <div class="col-12"><button id="saveBtn" class="btn btn-success"><span class="spinner-border spinner-border-sm d-none me-1" role="status" aria-hidden="true"></span> Save</button></div>
 </form>
 {% endblock %}

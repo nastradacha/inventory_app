@@ -14,3 +14,5 @@ Thumbs.db
 
 
 my_store_inventory.csv
+store_sales_new.csv
+import_sales_csv.py

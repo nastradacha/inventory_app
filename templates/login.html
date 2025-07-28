@@ -7,7 +7,7 @@
       {{ form.hidden_tag() }}            {# inject CSRF token #}
       <div class="mb-3">{{ form.username.label }}{{ form.username(class_='form-control') }}</div>
       <div class="mb-3">{{ form.password.label }}{{ form.password(class_='form-control', type='password') }}</div>
-      {{ form.submit(class_='btn btn-primary w-100') }}
+      {{ form.submit(class_='btn btn-primary w-100', **{'data-testid':'login-btn'}) }}
     </form>
   </div>
 </div>
