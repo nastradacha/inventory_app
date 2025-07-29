@@ -138,7 +138,38 @@ Below is a **patch list** of places where adding `data-testid` will improve loca
 | `templates/base.html` sidebar Dashboard link | | `data-testid="nav-dashboard"` |
 | `templates/base.html` sidebar Products link | | `data-testid="nav-products"` |
 | `templates/batch_preview.html` confirm upload | | `data-testid="apply-batch"` |
+| `templates/batch_upload.html` file input | | `data-testid="upload-file"` |
+| `templates/batch_upload.html` preview button | | `data-testid="preview-batch"` |
+| `templates/batch_upload.html` download template link | | `data-testid="download-template"` |
+| `templates/batch_upload.html` download example link | | `data-testid="download-example"` |
 | … | … | … | … |
+
+### 5.6 Batch Inventory Upload (Manager)
+| # | Title | Steps | Expected | Selectors |
+|---|-------|-------|----------|-----------|
+| 5.6-A | Upload valid CSV | 1. Sidebar **Batch Upload**  2. Click **Download Template**  3. Fill CSV with 2 new products + 1 update, save  4. Drag or select file in **Upload** page  5. Click **Preview** | Preview table shows 3 rows with correct diff indicators | `input[type=file][data-testid=upload-file]`, `button[data-testid=preview-batch]` |
+| 5.6-B | Confirm changes | Continue from 5.6-A, click **Apply Batch** | Success toast `Batch applied!`, inventory updated, audit log entries added | `button[data-testid=apply-batch]` |
+| 5.6-C | Cancel preview | From 5.6-A, click **Cancel** | Info toast `Batch cancelled.`, no DB changes | `button[data-bs-dismiss="modal"]` |
+| 5.6-D | Upload file with validation errors | Prepare CSV with missing price field, upload & preview | Error table appears with row numbers, **Apply Batch** disabled | `.error-row`, `#errorSummary` |
+| 5.6-E | Download template (CSV) | Click **Download Template** | CSV file downloads, correct headers present | `a[data-testid=download-template]` |
+| 5.6-F | Download example (CSV) | Click **Download Example** | CSV with sample rows downloads | `a[data-testid=download-example]` |
+| 5.6-G | Add-stock mode | Upload `docs/samples/batch_add_stock.csv`, select **Add stock** in Update Mode, preview | Diff shows increased quantities only | — |
+| 5.6-H | Replace-stock mode | Upload `docs/samples/batch_replace_stock.csv`, select **Replace stock** | Diff shows new absolute quantities | — |
+| 5.6-I | Update prices mode | Upload `docs/samples/batch_update_prices.csv`, select **Update prices** | Diff shows price changes only | — |
+| 5.6-J | Full update mode | Upload combined file with qty+prices (create if needed) and select **Full update** | Diff shows quantity, price and meta changes | — |
+
+**Sample CSV templates** (located in `docs/samples/`):
+
+| File | Intended Mode | Description |
+|------|---------------|-------------|
+| `batch_add_stock.csv` | Add stock | Two existing SKUs with higher quantities. |
+| `batch_replace_stock.csv` | Replace stock | Same SKUs but lower quantities to overwrite. |
+| `batch_update_prices.csv` | Update prices | Same SKUs, quantity `0`, new cost & selling prices. |
+| `batch_full_update.csv` | Full update | Combination of quantity, price and category edits. |
+
+* **Reports & Dashboard widgets**
+* **Audit Log**
+* **Navigation & Responsive behaviour**
 
 *See separate `automation_selectors.patch` for full diff.*
 

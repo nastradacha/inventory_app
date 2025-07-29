@@ -199,6 +199,19 @@ def preview_batch_upload():
         result = process_spreadsheet(file, update_mode)
         
         if result['success']:
+            # Calculate total cost for display in preview
+            total_cost = sum(float(item['cost_price']) * int(item['quantity']) for item in result['results'])
+            from datetime import date
+            # Prepare JSON-serialisable copy of updates (convert dates to strings)
+            safe_updates = []
+            for item in result['results']:
+                copy_item = {k: v for k, v in item.items() if k != 'existing_product'}
+                if isinstance(copy_item.get('expiry_date'), date):
+                    copy_item['expiry_date'] = copy_item['expiry_date'].strftime('%Y-%m-%d')
+                safe_updates.append(copy_item)
+            result['updates'] = safe_updates
+            result['update_mode'] = update_mode
+            result['total_cost'] = total_cost
             return jsonify({
                 'success': True,
                 'html': render_template('batch_preview.html', **result)
@@ -221,8 +234,7 @@ def confirm_batch_upload():
         success_count = 0
         error_count = 0
         
-        # Start transaction
-        db.session.begin()
+        
         
         for update in updates:
             try:

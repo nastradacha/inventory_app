@@ -1,0 +1,3 @@
+name,category,cost_price,selling_price,quantity,safety_stock,expiry_date
+Coke 330ml,Drinks,4.50,6.50,0,10,31/12/2030
+Milo 400g,Food,22.00,30.00,0,5,15/07/2030

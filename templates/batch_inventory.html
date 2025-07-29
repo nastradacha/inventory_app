@@ -184,10 +184,7 @@
             <div class="modal-body" id="preview-content">
                 <!-- Preview content will be loaded here -->
             </div>
-            <div class="modal-footer d-flex justify-content-between">
-                <button type="button" class="btn btn-secondary">Cancel</button>
-                <button type="submit" class="btn btn-primary btn-mobile w-100 w-md-auto">Preview Changes</button>
-            </div>
+            
         </div>
     </div>
 </div>
@@ -200,6 +197,9 @@ document.getElementById('batch-upload-form').addEventListener('submit', function
     
     fetch('{{ url_for("batch_inventory.preview_batch_upload") }}', {
         method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('input[name="csrf_token"]').value
+        },
         body: formData
     })
     .then(response => response.json())
@@ -212,5 +212,45 @@ document.getElementById('batch-upload-form').addEventListener('submit', function
         }
     });
 });
+
+// Global confirm handler (called from Preview modal)
+function confirmBatchUpload() {
+    const btn = document.getElementById('confirmBtn');
+    if (!btn) return;
+    btn.disabled = true;
+    btn.querySelector('.spinner-border').classList.remove('d-none');
+
+    const modal = document.getElementById('previewModal');
+    const updatesScript = modal.querySelector('#updates-data');
+    const updates = JSON.parse(updatesScript.textContent);
+    const updateMode = updatesScript.dataset.updateMode || 'add_stock';
+
+    fetch('{{ url_for("batch_inventory.confirm_batch_upload") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('input[name="csrf_token"]').value
+        },
+        body: JSON.stringify({ updates: updates, update_mode: updateMode })
+    })
+    .then(r => r.json())
+    .then(data => {
+        btn.querySelector('.spinner-border').classList.add('d-none');
+        if (data.success) {
+            var toastEl = document.getElementById('toast-container');
+            if (toastEl) toastEl.innerText = data.message || 'Batch applied!';
+            bootstrap.Modal.getInstance(modal).hide();
+            location.reload();
+        } else {
+            alert(data.message || 'Error applying batch.');
+            btn.disabled = false;
+        }
+    })
+    .catch(() => {
+        alert('Server error');
+        btn.disabled = false;
+        btn.querySelector('.spinner-border').classList.add('d-none');
+    });
+}
 </script>
 {% endblock %}
