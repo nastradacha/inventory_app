@@ -144,6 +144,21 @@ Below is a **patch list** of places where adding `data-testid` will improve loca
 | `templates/batch_upload.html` download example link | | `data-testid="download-example"` |
 | … | … | … | … |
 
+### 5.6 Batch Inventory Upload Scenarios
+
+### Stable Selectors
+
+| Element | data-testid |
+|---------|-------------|
+| Download CSV template | `download-csv-template` |
+| Download Excel template | `download-excel-template` |
+| Download example data | `download-example-data` |
+| Preview/Upload button | `preview-batch` |
+| Cancel in preview modal | `cancel-preview` |
+| Confirm changes button | `confirm-batch` |
+
+Use these selectors in your Cypress/Playwright scripts for resilient targeting.
+
 ### 5.6 Batch Inventory Upload (Manager)
 | # | Title | Steps | Expected | Selectors |
 |---|-------|-------|----------|-----------|
