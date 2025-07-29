@@ -734,9 +734,121 @@ def inventory_report():
                            items=items, totals=totals,
                            currency=app.config['CURRENCY_SYMBOL'])
 
+# ────────────────────────────────────────────────────────────────
+# Settings – admin only
+# ────────────────────────────────────────────────────────────────
+
+from flask_wtf import FlaskForm
+from wtforms import HiddenField, SubmitField
+
+class ResetAllForm(FlaskForm):
+    confirm_token = HiddenField('Token')
+    submit = SubmitField('RESET ALL')
 
 
+def _inventory_dataframe():
+    data = [{
+        'id': p.id,
+        'name': p.name,
+        'category': p.category,
+        'expiry_date': p.expiry_date,
+        'cost_price': p.cost_price,
+        'selling_price': p.selling_price,
+        'initial_qty': p.initial_qty,
+        'qty_at_hand': p.qty_at_hand,
+        'safety_stock': p.safety_stock,
+    } for p in Product.query.order_by(Product.name)]
+    return pd.DataFrame(data)
 
+
+def _sales_dataframe():
+    rows = (
+        db.session.query(Sale, Product.name)
+        .join(Product)
+        .order_by(Sale.date.desc())
+        .all()
+    )
+    data = [{
+        'id': s.id,
+        'product_id': s.product_id,
+        'product_name': name,
+        'date': s.date,
+        'qty_sold': s.qty_sold,
+        'unit_price': s.unit_price or s.product.selling_price,
+    } for s, name in rows]
+    return pd.DataFrame(data)
+
+
+@app.route('/settings')
+@login_required
+@manager_required
+def settings():
+    form = ResetAllForm()
+    # generate one-time token in session for confirm input matching
+    token = os.urandom(4).hex()
+    session['reset_token'] = token
+    return render_template('settings.html', form=form, token=token)
+
+
+@app.route('/settings/download/<string:kind>')
+@login_required
+@manager_required
+
+def download_data(kind):
+    if kind == 'inventory':
+        df = _inventory_dataframe()
+        filename = 'inventory_backup.csv'
+    elif kind == 'sales':
+        df = _sales_dataframe()
+        filename = 'sales_backup.csv'
+    else:
+        abort(404)
+
+    return send_file(
+        BytesIO(df.to_csv(index=False).encode()),
+        mimetype='text/csv',
+        as_attachment=True,
+        download_name=filename,
+    )
+
+
+@app.route('/settings/reset', methods=['POST'])
+@login_required
+@manager_required
+@csrf.exempt     # token inside form; extra CSRF okay but re-use existing is fine
+
+def reset_all():
+    form = ResetAllForm()
+    if not form.validate_on_submit():
+        flash('Invalid form submission', 'danger')
+        return redirect(url_for('settings'))
+
+    if form.confirm_token.data != session.get('reset_token'):
+        flash('Confirmation failed – token mismatch', 'danger')
+        return redirect(url_for('settings'))
+
+    # perform destructive wipe inside transaction
+    try:
+        with db.session.begin():
+            n_sales = Sale.query.delete()
+            PriceChange.query.delete()
+            Shift.query.delete()
+            n_products = Product.query.delete()
+        db.session.add(LogEntry(
+            user=current_user.username,
+            action='reset_all',
+            details=f'removed {n_products} products and {n_sales} sales'
+        ))
+        db.session.commit()
+        flash('All sales and inventory data have been cleared.', 'warning')
+    except Exception as e:
+        db.session.rollback()
+        app.logger.exception('Reset failed')
+        flash('Reset failed: ' + str(e), 'danger')
+    return redirect(url_for('dashboard'))
+
+ 
+ 
 if __name__ == '__main__':
     # Ensure tables exist when running via `python app.py` as well
     with app.app_context():

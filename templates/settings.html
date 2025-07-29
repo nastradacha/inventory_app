@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="mb-4">Settings</h2>
+
+<div class="card mb-4">
+  <div class="card-header fw-semibold">Data Back-up</div>
+  <div class="card-body">
+    <p class="mb-3">Before wiping the database you can download CSV back-ups of current data.</p>
+    <a class="btn btn-outline-primary me-2" href="{{ url_for('download_data', kind='inventory') }}" data-testid="download-inventory"><i class="bi bi-download me-1"></i>Inventory CSV</a>
+    <a class="btn btn-outline-primary" href="{{ url_for('download_data', kind='sales') }}" data-testid="download-sales"><i class="bi bi-download me-1"></i>Sales CSV</a>
+  </div>
+</div>
+
+<div class="card border-danger">
+  <div class="card-header bg-danger text-white fw-semibold">Danger Zone</div>
+  <div class="card-body">
+    <p class="fw-bold">Delete <u>all</u> inventory, sales, price-change and shift data. This cannot be undone.</p>
+    <form method="POST" action="{{ url_for('reset_all') }}" id="resetAllForm">
+      {{ form.hidden_tag() }}
+      <input type="hidden" name="confirm_token" value="{{ token }}">
+      <button type="submit" class="btn btn-danger" data-confirm="Type RESET in the next dialog to confirm" data-testid="reset-all">Delete Everything</button>
+    </form>
+  </div>
+</div>
+
+<!-- Inline confirmation for extra safety -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Intercept the submit to ask for the keyword
+    document.getElementById('resetAllForm').addEventListener('submit', function(e){
+      const word = prompt('This will erase ALL data. Type “RESET” to continue.');
+      if(word !== 'RESET'){
+        e.preventDefault();
+        alert('Reset cancelled.');
+      }
+    });
+  });
+</script>
+
+{% endblock %}
