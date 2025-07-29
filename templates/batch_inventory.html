@@ -20,19 +20,19 @@
                     </ol>
                                         <div class="row mb-3">
                         <div class="col-12 col-md-6 mb-2">
-                            <a href="{{ url_for('batch_inventory.download_batch_template', format='csv') }}" class="btn btn-outline-primary btn-mobile w-100">
+                            <a href="{{ url_for('batch_inventory.download_batch_template', format='csv') }}" class="btn btn-outline-primary btn-mobile w-100" data-testid="download-csv-template">
                                 <i class="bi bi-download"></i> Download CSV Template
                             </a>
                         </div>
                         <div class="col-12 col-md-6 mb-2">
-                            <a href="{{ url_for('batch_inventory.download_batch_template', format='xlsx') }}" class="btn btn-outline-primary btn-mobile w-100">
+                            <a href="{{ url_for('batch_inventory.download_batch_template', format='xlsx') }}" class="btn btn-outline-primary btn-mobile w-100" data-testid="download-excel-template">
                                 <i class="bi bi-download"></i> Download Excel Template
                             </a>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-12 col-md-6 mb-2">
-                            <a href="{{ url_for('batch_inventory.download_example_data') }}" class="btn btn-outline-info btn-mobile w-100">
+                            <a href="{{ url_for('batch_inventory.download_example_data') }}" class="btn btn-outline-info btn-mobile w-100" data-testid="download-example-data">
                                 <i class="bi bi-download"></i> Download Example Data
                             </a>
                         </div>
@@ -97,7 +97,7 @@
 
                         <!-- Submit Button -->
                         <div class="d-grid">
-                            {{ form.submit(class="btn btn-primary") }}
+                            {{ form.submit(class="btn btn-primary", **{'data-testid': 'preview-batch'}) }}
                         </div>
                     </form>
                 </div>
