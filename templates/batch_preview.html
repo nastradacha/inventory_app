@@ -107,13 +107,14 @@
             <div class="col-md-3">
                 <div class="card text-center">
                     <div class="card-body">
-                        <h5 class="card-title text-primary">GH₵{{ "%.2f"|format(results|map(attribute='cost_price')|map('float')|map('multiply', results|map(attribute='quantity')|map('int'))|sum) }}</h5>
+                        <h5 class="card-title text-primary">GH₵{{ "%.2f"|format(total_cost) }}</h5>
                         <p class="card-text">Total Cost</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    {% endif %}
 
     <div class="mt-3 d-flex justify-content-between">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
@@ -125,37 +126,10 @@
         </button>
     </div>
 
-    <script id="updates-data" type="application/json">
+    <script id="updates-data" type="application/json" data-update-mode="{{ update_mode }}">
         {{ updates|tojson }}
     </script>
 
-    <script>
-    function confirmBatchUpload() {
-        const btn = document.getElementById('confirmBtn');
-        btn.disabled = true;
-        btn.querySelector('.spinner-border').classList.remove('d-none');
-        const updates = JSON.parse(document.getElementById('updates-data').textContent);
-        const updateMode = '{{ update_mode }}';
-        
-        fetch("{{ url_for('batch_inventory.confirm_batch_upload', _external=True) }}", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                updates: updates,
-                update_mode: updateMode
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Success: ' + data.message);
-                window.location.reload();
-            } else {
-                alert('Error: ' + data.message);
-            }
-        });
-    }
+    <!-- confirmBatchUpload defined globally in batch_inventory.html -->
 </script>
 </div>
