@@ -166,6 +166,12 @@ def process_spreadsheet(file, update_mode):
     except Exception as e:
         return {'success': False, 'message': str(e)}
 
+@batch_inventory_bp.route('/batch-upload')
+@login_required
+def batch_upload_redirect():
+    """Legacy/short URL – redirect to main batch inventory page"""
+    return redirect(url_for('batch_inventory.batch_inventory'))
+
 @batch_inventory_bp.route('/batch-inventory', methods=['GET', 'POST'])
 @login_required
 def batch_inventory():
