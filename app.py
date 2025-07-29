@@ -739,10 +739,9 @@ def inventory_report():
 # ────────────────────────────────────────────────────────────────
 
 from flask_wtf import FlaskForm
-from wtforms import HiddenField, SubmitField
+from wtforms import SubmitField
 
 class ResetAllForm(FlaskForm):
-    confirm_token = HiddenField('Token')
     submit = SubmitField('RESET ALL')
 
 
@@ -784,10 +783,7 @@ def _sales_dataframe():
 @manager_required
 def settings():
     form = ResetAllForm()
-    # generate one-time token in session for confirm input matching
-    token = os.urandom(4).hex()
-    session['reset_token'] = token
-    return render_template('settings.html', form=form, token=token)
+    return render_template('settings.html', form=form)
 
 
 @app.route('/settings/download/<string:kind>')
@@ -815,7 +811,6 @@ def download_data(kind):
 @app.route('/settings/reset', methods=['POST'])
 @login_required
 @manager_required
-@csrf.exempt     # token inside form; extra CSRF okay but re-use existing is fine
 
 def reset_all():
     form = ResetAllForm()
@@ -823,9 +818,7 @@ def reset_all():
         flash('Invalid form submission', 'danger')
         return redirect(url_for('settings'))
 
-    if form.confirm_token.data != session.get('reset_token'):
-        flash('Confirmation failed – token mismatch', 'danger')
-        return redirect(url_for('settings'))
+    
 
     # perform destructive wipe inside transaction
     try:
