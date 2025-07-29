@@ -18,7 +18,7 @@
     <form method="POST" action="{{ url_for('reset_all') }}" id="resetAllForm">
       {{ form.hidden_tag() }}
       <input type="hidden" name="confirm_token" value="{{ token }}">
-      <button type="submit" class="btn btn-danger" data-confirm="Type RESET in the next dialog to confirm" data-testid="reset-all">Delete Everything</button>
+      <button type="submit" class="btn btn-danger" data-testid="reset-all">Delete Everything</button>
     </form>
   </div>
 </div>

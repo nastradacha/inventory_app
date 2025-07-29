@@ -822,11 +822,11 @@ def reset_all():
 
     # perform destructive wipe inside transaction
     try:
-        with db.session.begin():
-            n_sales = Sale.query.delete()
-            PriceChange.query.delete()
-            Shift.query.delete()
-            n_products = Product.query.delete()
+        n_sales = Sale.query.delete()
+        PriceChange.query.delete()
+        Shift.query.delete()
+        n_products = Product.query.delete()
+
         db.session.add(LogEntry(
             user=current_user.username,
             action='reset_all',
