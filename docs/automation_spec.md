@@ -231,7 +231,86 @@ test('admin can add product', async ({ page }) => {
 
 ---
 
-## 10. Change Log
+
+
+## 12. Settings → Full Reset Feature
+
+### 12.1  Stable Selectors
+| Page | Element | data-testid |
+|------|---------|-------------|
+| Sidebar | Settings link | `nav-settings` |
+| Settings | Download Inventory CSV button | `download-inventory` |
+| Settings | Download Sales CSV button | `download-sales` |
+| Settings | Delete Everything button | `reset-all` |
+| Toast container (global) | Toast area | `toast-container` |
+
+### 12.2  Happy-Path End-to-End
+
+| # | Step | Expected Result / Assertion |
+|---|------|-----------------------------|
+| 1 | Log in as admin (`admin / changeme123`). | Dashboard visible. |
+| 2 | Click sidebar link `[data-testid=nav-settings]`. | Settings page loads – title “Settings” present. |
+| 3 | Click `[data-testid=download-inventory]`. | Browser downloads `inventory_backup.csv` (status 200, file size > 0 bytes). |
+| 4 | Click `[data-testid=download-sales]`. | Browser downloads `sales_backup.csv` (status 200, file size > 0 bytes). |
+| 5 | Click `[data-testid=reset-all]`. | A JS `prompt()` appears asking to type **RESET**. |
+| 6 | Type `RESET` and submit. | Page redirects to dashboard, danger-toast “All sales and inventory data have been cleared.” visible inside `[data-testid=toast-container]`. |
+| 7 | Navigate to Products page. | Table shows **0** products. |
+| 8 | Navigate to Sales page (any date). | Table shows **0** sales. |
+| 9 | Check Audit log page. | Latest entry has action [reset_all](cci:1://file:///c:/Users/nastr/Documents/inventory_app/app.py:814:0-847:41) and correct row counts. |
+
+### 12.3  Selector Tips
+
+* The “Delete Everything” button is inside a `<form>`; Selenium can do  
+  `page.locator('[data-testid=reset-all]')`.
+* The confirmation token is server-side; automation doesn’t need to supply it – only to type **RESET** at the prompt.
+* Toasts appear in the global container – wait for `page.locator('[data-testid=toast-container] >> text=/cleared/i')`.
+
+### 12.4  Pytest Example (Playwright)
+
+```python
+@pytest.mark.regression
+def test_full_reset(page, base_url):
+    # Login
+    page.goto(base_url + "/login")
+    page.fill("input[name=username]", "admin")
+    page.fill("input[name=password]", "changeme123")
+    page.click("text=Sign In")
+
+    # Go to Settings
+    page.click("[data-testid=nav-settings]")
+
+    # Backup files
+    with page.expect_download() as inv:
+        page.click("[data-testid=download-inventory]")
+    assert inv.value.suggested_filename.endswith(".csv")
+
+    with page.expect_download() as sales:
+        page.click("[data-testid=download-sales]")
+    assert sales.value.suggested_filename.endswith(".csv")
+
+    # Trigger reset
+    page.once("dialog", lambda d: d.accept("RESET"))
+    page.click("[data-testid=reset-all]")
+
+    # Verify toast
+    page.locator("[data-testid=toast-container]").get_by_text("cleared").wait_for()
+
+    # Products should be empty
+    page.click("[data-testid=nav-products]")
+    assert page.locator("table tbody tr").count() == 0
+
+
+
+
+
+
+
+
+
+
+
+## 13. Change Log
 | Date | Author | Notes |
 |------|--------|-------|
-| 2025-07-28 | Cascade AI | Initial draft
+| 2025-07-29 | Nas | Added settings page with inventory and sales CSV download and full reset feature. Updated automation spec to include these new features. 
+  
