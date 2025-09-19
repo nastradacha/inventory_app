@@ -12,6 +12,9 @@
         <span id="stock-indicator" class="badge bg-info d-none">
           Stock: <span id="stock-count">0</span>
         </span>
+        <span id="price-indicator" class="badge bg-secondary d-none ms-2">
+          Price: {{ currency }}<span id="list-price">0.00</span>
+        </span>
       </div>
     </div>
     <select id="product-search" name="product_id" class="form-select" style="width:100%">
@@ -39,6 +42,21 @@
     </div>
   </div>
   
+  <!-- Optional alternate unit price -->
+  <div class="col-md-6">
+    <div class="d-flex justify-content-between align-items-center mb-1">
+      {{ form.unit_price.label(class_='form-label') }}
+      <div class="text-muted small">Leave blank to use list price</div>
+    </div>
+    <div class="input-group">
+      <span class="input-group-text">{{ currency }}</span>
+      {{ form.unit_price(class_='form-control', step='0.01', min='0.01', placeholder='Leave blank to use list price', **{'data-testid':'alt-price'}) }}
+    </div>
+    {% if form.unit_price.errors %}
+      <div class="text-danger small">{{ form.unit_price.errors[0] }}</div>
+    {% endif %}
+  </div>
+
   <div class="col-12">
     <button class="btn btn-primary" id="submit-btn" data-testid="sell"><span class="spinner-border spinner-border-sm d-none me-1" role="status" aria-hidden="true"></span> Record</button>
   </div>
@@ -49,6 +67,7 @@
 {{ super() }}
 <script>
 $(document).ready(function() {
+  const currency = {{ currency|tojson }};
   // Initialize Select2 with AJAX search
   const productSelect = $('#product-search');
   productSelect.select2({
@@ -84,6 +103,15 @@ $(document).ready(function() {
           if (data.success) {
             $('#stock-count').text(data.stock);
             $('#stock-indicator').removeClass('d-none');
+            if (typeof data.price === 'number') {
+              $('#list-price').text(Number(data.price).toFixed(2));
+              $('#price-indicator').removeClass('d-none');
+              // update placeholder to show default list price
+              $('#unit_price').attr('placeholder', `${currency}${Number(data.price).toFixed(2)} (default)`);
+            } else {
+              $('#price-indicator').addClass('d-none');
+              $('#unit_price').attr('placeholder', 'Leave blank to use list price');
+            }
             
             // Update max quantity hint
             $('#max-quantity').text(data.stock);
@@ -99,6 +127,8 @@ $(document).ready(function() {
         });
     } else {
       $('#stock-indicator').addClass('d-none');
+      $('#price-indicator').addClass('d-none');
+      $('#unit_price').attr('placeholder', 'Leave blank to use list price');
       $('#max-quantity-hint').addClass('d-none');
     }
   });
