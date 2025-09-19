@@ -225,8 +225,10 @@ def manager_required(f):
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
-        if user and bcrypt.checkpw(form.password.data.encode(), user.pw_hash.encode()):
+        username = (form.username.data or '').strip()
+        password = (form.password.data or '').strip()
+        user = User.query.filter_by(username=username).first()
+        if user and bcrypt.checkpw(password.encode(), user.pw_hash.encode()):
             login_user(user)
             return redirect(url_for('dashboard'))
         flash('Invalid credentials', 'danger')
@@ -297,10 +299,12 @@ def confirm_add():
 def users():
     form = NewUserForm()
     if form.validate_on_submit():
-        if User.query.filter_by(username=form.username.data).first():
+        username = (form.username.data or '').strip()
+        password = (form.password.data or '').strip()
+        if User.query.filter_by(username=username).first():
             flash('Username already exists', 'danger')
         else:
-            User.create(form.username.data, form.password.data, form.role.data)
+            User.create(username, password, form.role.data)
             flash('User created', 'success')
             return redirect(url_for('users'))
     user_list = User.query.order_by(User.username).all()
@@ -313,9 +317,32 @@ def reset_pwd(user_id):
     form = ResetPwdForm()
     if form.validate_on_submit():
         user = User.query.get_or_404(user_id)
-        user.pw_hash = bcrypt.hashpw(form.password.data.encode(), bcrypt.gensalt()).decode()
+        new_pwd = (form.password.data or '').strip()
+        user.pw_hash = bcrypt.hashpw(new_pwd.encode(), bcrypt.gensalt()).decode()
         db.session.commit()
         flash('Password reset', 'success')
+    return redirect(url_for('users'))
+
+
+@app.route('/users/<int:user_id>/delete', methods=['POST'])
+@login_required
+@manager_required
+def delete_user(user_id):
+    # Prevent accidental self-deletion
+    if current_user.id == user_id:
+        flash('You cannot delete your own account.', 'warning')
+        return redirect(url_for('users'))
+
+    user = User.query.get_or_404(user_id)
+
+    # Block deletion if user has shift history
+    if Shift.query.filter_by(cashier_id=user.id).first():
+        flash('Cannot delete: user has shift history.', 'warning')
+        return redirect(url_for('users'))
+
+    db.session.delete(user)
+    db.session.commit()
+    flash('User deleted', 'info')
     return redirect(url_for('users'))
 
 @app.route('/product-stock/<int:product_id>')
