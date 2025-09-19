@@ -6,16 +6,17 @@
   <div class="col-auto">
     <input type="date" name="start" class="form-control"
            value="{{ start }}" max="{{ end }}"
-           onchange="this.form.submit()">
-  </div>
-  <div class="col-auto">
-    <input type="date" name="end" class="form-control"
-           value="{{ end }}" min="{{ start }}"
-           onchange="this.form.submit()">
+           onchange="clearExportAndSubmit(this.form)">
   </div>
 
   <div class="col-auto">
-    <select name="breakdown" class="form-select" onchange="this.form.submit()">
+    <input type="date" name="end" class="form-control"
+           value="{{ end }}" min="{{ start }}"
+           onchange="clearExportAndSubmit(this.form)">
+  </div>
+
+  <div class="col-auto">
+    <select name="breakdown" class="form-select" onchange="clearExportAndSubmit(this.form)">
       <option value="summary"  {{ 'selected' if breakdown=='summary'  }}>Summary</option>
       <option value="category" {{ 'selected' if breakdown=='category' }}>By Category</option>
       <option value="product"  {{ 'selected' if breakdown=='product'  }}>By Product</option>
@@ -32,8 +33,16 @@
 </form>
 
 <script>
-// Removed exportPDF function since PDF button was removed
-function exportCSV(){ document.getElementById('export').value='csv';  document.forms[0].submit(); }
+// Clear export flag on load and for non-CSV submissions to avoid sticky auto-downloads
+document.addEventListener('DOMContentLoaded', () => {
+  const exp = document.getElementById('export');
+  if (exp) exp.value = '';
+});
+function clearExportAndSubmit(form){
+  const exp = document.getElementById('export');
+  if (exp) exp.value = '';
+  form.submit();
+}
 </script>
 
 {% if breakdown == 'summary' %}

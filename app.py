@@ -190,17 +190,32 @@ def record_sale():
             flash('Not enough stock!', 'danger')
         else:
             product.qty_at_hand -= form.quantity.data
+            # Allow optional alternate price
+            alt_price = form.unit_price.data
             sale = Sale(
                 product_id=product.id,
                 qty_sold=form.quantity.data,
                 date=date.today(),
+                unit_price=alt_price if alt_price else None,
             )
             db.session.add(sale)
+
+            # Audit if an alternate price was used
+            if alt_price and float(alt_price) != float(product.selling_price or 0):
+                db.session.add(LogEntry(
+                    user=current_user.username,
+                    action='sale_alt_price',
+                    details=f"{form.quantity.data} × {product.name} at {app.config['CURRENCY_SYMBOL']}{alt_price:.2f} (list {app.config['CURRENCY_SYMBOL']}{product.selling_price:.2f})"
+                ))
+
             db.session.commit()
-            flash('Sale recorded.', 'success')
+            if alt_price:
+                flash('Sale recorded with alternate price.', 'success')
+            else:
+                flash('Sale recorded.', 'success')
             return redirect(url_for('dashboard'))
     
-    return render_template('record_sale.html', form=form)
+    return render_template('record_sale.html', form=form, currency=app.config['CURRENCY_SYMBOL'])
 
 
 login_manager = LoginManager(app)
@@ -353,7 +368,8 @@ def product_stock(product_id):
         return jsonify({
             'success': True,
             'stock': product.qty_at_hand,
-            'name': product.name
+            'name': product.name,
+            'price': product.selling_price
         })
     return jsonify({'success': False, 'message': 'Product not found'}), 404
 
@@ -685,8 +701,8 @@ def sales_summary():
         view_rows = (
             db.session.query(
                 Product.category,
-                func.coalesce(
-                    func.sum(Sale.qty_sold * Sale.unit_price), 0.0
+                func.sum(
+                    Sale.qty_sold * func.coalesce(Sale.unit_price, Product.selling_price)
                 ).label("rev")
             )
             .join(Product)
@@ -702,14 +718,18 @@ def sales_summary():
             db.session.query(
                 Product.name,
                 func.sum(Sale.qty_sold).label("qty"),
-                func.coalesce(                      # ← NEW
-                    func.sum(Sale.qty_sold * Sale.unit_price), 0.0
-            ).label("rev")
-        )
+                func.sum(
+                    Sale.qty_sold * func.coalesce(Sale.unit_price, Product.selling_price)
+                ).label("rev"),
+            )
             .join(Product)
             .filter(Sale.date.between(start, end))
             .group_by(Product.name)
-            .order_by(func.sum(Sale.qty_sold * Sale.unit_price).desc())
+            .order_by(
+                func.sum(
+                    Sale.qty_sold * func.coalesce(Sale.unit_price, Product.selling_price)
+                ).desc()
+            )
             .limit(50)
             .all()
         )
