@@ -11,7 +11,7 @@ from models import db, Product, Sale, User, PriceChange, LogEntry, Shift
 from forms import AddStockForm, RecordSaleForm, NewUserForm, ResetPwdForm, EditProductForm, EditSaleForm, BatchInventoryForm
 from rapidfuzz import fuzz
 
-from sqlalchemy import func, cast, Date
+from sqlalchemy import func, cast, Date, inspect
 import pandas as pd
 from io import StringIO
 from io import BytesIO
@@ -85,24 +85,32 @@ def dashboard():
     )
     today_rev = float(today_row[0] or 0.0)
     today_units = int(today_row[1] or 0)
-    # Cashier-specific (for authenticated user). Historical sales may be NULL until this feature rolls out.
-    my_row = (
-        db.session.query(
-            db.func.coalesce(
-                db.func.sum(
-                    Sale.qty_sold * db.func.coalesce(Sale.unit_price, Product.selling_price)
-                ),
-                0.0,
-            ).label('rev'),
-            db.func.coalesce(db.func.sum(Sale.qty_sold), 0).label('units'),
-        )
-        .join(Product)
-        .filter(Sale.date == today)
-        .filter(Sale.cashier_id == current_user.id)
-        .first()
-    ) if current_user.is_authenticated else (0.0, 0)
-    my_today_rev = float(my_row[0] or 0.0)
-    my_today_units = int(my_row[1] or 0)
+    # Cashier-specific metrics; guard against missing column during rolling deploys
+    my_today_rev = 0.0
+    my_today_units = 0
+    if current_user.is_authenticated and current_user.role == 'cashier':
+        try:
+            my_row = (
+                db.session.query(
+                    db.func.coalesce(
+                        db.func.sum(
+                            Sale.qty_sold * db.func.coalesce(Sale.unit_price, Product.selling_price)
+                        ),
+                        0.0,
+                    ).label('rev'),
+                    db.func.coalesce(db.func.sum(Sale.qty_sold), 0).label('units'),
+                )
+                .join(Product)
+                .filter(Sale.date == today)
+                .filter(Sale.cashier_id == current_user.id)
+                .first()
+            )
+            my_today_rev = float((my_row[0] or 0.0))
+            my_today_units = int((my_row[1] or 0))
+        except Exception:
+            # Column may not exist yet in the deployed DB; show zeros gracefully
+            my_today_rev = 0.0
+            my_today_units = 0
     low_stock = Product.query.filter(Product.qty_at_hand < Product.safety_stock).order_by(Product.qty_at_hand.asc()).limit(20).all()
     top_sales = (
         db.session.query(Product.name, db.func.sum(Sale.qty_sold).label('units'))
@@ -234,8 +242,14 @@ def record_sale():
                 qty_sold=form.quantity.data,
                 date=form.sale_date.data,
                 unit_price=alt_price if alt_price else None,
-                cashier_id=current_user.id,
             )
+            # Set cashier only if DB has the column (handles rolling migrations safely)
+            try:
+                cols = [c['name'] for c in inspect(db.engine).get_columns('sale')]
+                if 'cashier_id' in cols:
+                    sale.cashier_id = current_user.id
+            except Exception:
+                pass
             db.session.add(sale)
 
             # Audit if an alternate price was used
