@@ -6,12 +6,15 @@ StoreTrack is a modern, Ghana-focused inventory and sales management web applica
 
 ## ✨ Key Features
 
-* **Product & Stock Management** – Add, edit, and track products with cost / selling prices, safety stock thresholds, and expiry dates.
-* **Real-Time Sales Recording** – Shift-aware cashier workflow with automatic stock deductions and audit logging.
-* **Batch Inventory Update (Spreadsheet Upload)** – Drag-and-drop CSV or XLSX files to bulk add stock, replace stock, update prices, or perform a full update.
-* **Role-Based Access Control** – Manager vs. Cashier routes, with CSRF protection and secure password hashing (bcrypt).
-* **Responsive UI** – Bootstrap 5 off-canvas sidebar, mobile-first tables, confirmation modals, toasts, and loading spinners.
-* **Audit Trail & Reporting** – Log every critical action, view dashboard metrics, and download templates for offline analysis.
+* **Product & Stock Management** – Add, edit, and track products with cost/selling prices, safety stock thresholds, and expiry dates.
+* **Real-Time Sales** – Shift-aware cashier workflow with automatic stock deductions and audit logging.
+* **Alternate Pricing** – Enter an alternate unit price when recording a sale; override/edit the unit price on existing sales. All price overrides are audited.
+* **Backdated Sales** – Set a sale date (no future dates) to enter historical sales from notebooks/receipts.
+* **Batch Inventory Update (Spreadsheet Upload)** – Drag-and-drop CSV/XLSX to bulk add stock, replace stock, update prices, or perform a full update; robust validation and preview.
+* **Admin Settings** – Manager-only page to download full CSV backups (inventory and sales) and perform a full data reset with safeguards and audit log.
+* **User Management** – Create users, reset passwords, and manager-only delete (with safeguards against deleting self or users with history).
+* **Responsive, Modern UI** – Bootstrap 5 off-canvas sidebar, mobile-friendly tables (horizontal scroll), confirmation modals, toasts, Select2 search, and loading spinners.
+* **Audit Trail & Reporting** – Log every critical action; dashboard metrics; inventory valuation; sales summary by day, category, or product; CSV export.
 * **Automation-Ready** – Stable `data-testid` attributes, comprehensive automation spec, and sample CSV templates for every batch mode.
 
 ---
@@ -25,21 +28,24 @@ StoreTrack is a modern, Ghana-focused inventory and sales management web applica
 | Auth                 | Flask-Login, bcrypt                                      |
 | Forms & Validation   | Flask-WTF, WTForms                                       |
 | Spreadsheet Parsing  | pandas (with optional openpyxl)                          |
-| Front-End            | Bootstrap 5, FontAwesome, Select2, vanilla JS            |
+| Front-End            | Bootstrap 5, Bootstrap Icons, Select2, jQuery            |
 | Misc                 | RapidFuzz (fuzzy product match), Flask-Migrate           |
 
 Folder layout (major parts only):
 
 ```
 inventory_app/
-├─ app.py                # Application factory + blueprint registration
+├─ app.py                # Flask application & routes
 ├─ models.py             # SQLAlchemy models
 ├─ batch_inventory_routes.py
 ├─ templates/
 │   ├─ batch_inventory.html
-│   └─ batch_preview.html
+│   ├─ batch_preview.html
+│   ├─ sales_summary.html
+│   ├─ edit_sale.html
+│   └─ settings.html
 ├─ static/
-│   └─ ...               # JS, CSS, icons
+│   └─ ...               # JS, CSS (theme, mobile), icons
 ├─ docs/
 │   ├─ automation_spec.md
 │   └─ samples/          # Sample CSVs for automation
@@ -62,20 +68,19 @@ flask run               # defaults to http://localhost:5000
 
 > **Note**: Environment variables such as `SECRET_KEY`, `DATABASE_URL`, and `FLASK_ENV` can be set in a `.env` file.  See _.env.example_ for a template.
 
-### 2. Create an Admin User
+### 2. Admin User
 
-Run the interactive shell:
+On first run, the app auto-creates a default manager if none exists:
 
-```bash
-flask shell
->>> from app import db, create_app
->>> from models import User
->>> u = User(username='admin', role='manager')
->>> u.set_password('changeme')
->>> db.session.add(u); db.session.commit()
-```
+* Username: `admin`
+* Password: `changeme123`
 
-Login as *admin / changeme* and immediately change the password.
+You can override these via environment variables before first run:
+
+* `DEFAULT_ADMIN_USER=yourname`
+* `DEFAULT_ADMIN_PASS=yourpass`
+
+After login, visit `Users` (manager-only) to create additional users or reset passwords.
 
 ### 3. Batch Upload Walk-through
 
@@ -108,11 +113,12 @@ pytest
 
 ## 🛠️ Deployment
 
-The app runs on any WSGI host; for Render or Heroku:
+The app runs on any WSGI host. For Render:
 
-1. Set environment variables (see Quick Start).
-2. Ensure `gunicorn` is in `requirements.txt`.
-3. `render.yaml` / `Procfile` already included (if applicable).
+1. Set environment variables (`SECRET_KEY`, `DATABASE_URL`, `DEFAULT_ADMIN_*`).
+2. Ensure `gunicorn` is in `requirements.txt` and your start command uses it (e.g., `gunicorn app:app`).
+3. Configure the service to deploy from the `main` branch. Trigger a deploy.
+4. Optional: enable SQLAlchemy pre-ping in your config to avoid stale DB connections on Render.
 
 Migrate automatically on startup or via CI step:
 
@@ -125,7 +131,7 @@ flask db upgrade
 ## 📂 Backup & Recovery
 
 * Daily PostgreSQL dumps (`pg_dump`) recommended.
-* `backup/` folder can store downloaded CSV snapshots of current inventory.
+* Settings → Download offers CSV snapshots of current inventory and sales.
 
 ---
 
@@ -133,8 +139,8 @@ flask db upgrade
 
 | Aspect      | Implementation                                    |
 |-------------|----------------------------------------------------|
-| Currency    | Prices stored as `Decimal`; UI shows **GH₵** prefix|
-| Date Format | DD/MM/YYYY in templates and sample files           |
+| Currency    | Prices stored as floats; UI shows **GH₵** prefix with 2dp|
+| Date Format | Forms use ISO `YYYY-MM-DD`; samples/exports may show `DD/MM/YYYY`|
 | Mobile Money| Planned integration (MTN MoMo, Vodafone Cash)      |
 
 ---
