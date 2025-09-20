@@ -61,6 +61,7 @@ with app.app_context():
     # ----------------------------------------------------------------------
 
 @app.route('/')
+@login_required
 def dashboard():
     products = Product.query.all()
     total_cost = sum(p.qty_at_hand * p.cost_price for p in products)
@@ -84,6 +85,24 @@ def dashboard():
     )
     today_rev = float(today_row[0] or 0.0)
     today_units = int(today_row[1] or 0)
+    # Cashier-specific (for authenticated user). Historical sales may be NULL until this feature rolls out.
+    my_row = (
+        db.session.query(
+            db.func.coalesce(
+                db.func.sum(
+                    Sale.qty_sold * db.func.coalesce(Sale.unit_price, Product.selling_price)
+                ),
+                0.0,
+            ).label('rev'),
+            db.func.coalesce(db.func.sum(Sale.qty_sold), 0).label('units'),
+        )
+        .join(Product)
+        .filter(Sale.date == today)
+        .filter(Sale.cashier_id == current_user.id)
+        .first()
+    ) if current_user.is_authenticated else (0.0, 0)
+    my_today_rev = float(my_row[0] or 0.0)
+    my_today_units = int(my_row[1] or 0)
     low_stock = Product.query.filter(Product.qty_at_hand < Product.safety_stock).order_by(Product.qty_at_hand.asc()).limit(20).all()
     top_sales = (
         db.session.query(Product.name, db.func.sum(Sale.qty_sold).label('units'))
@@ -215,6 +234,7 @@ def record_sale():
                 qty_sold=form.quantity.data,
                 date=form.sale_date.data,
                 unit_price=alt_price if alt_price else None,
+                cashier_id=current_user.id,
             )
             db.session.add(sale)
 

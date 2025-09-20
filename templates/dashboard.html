@@ -15,9 +15,9 @@
   <div class="col-12 col-sm-6 col-lg-4"><div class="card p-3 text-center">
     <h5>Today's Store Sales</h5><h3>{{ currency }}{{ '{:,.2f}'.format(today_rev) }}</h3></div></div>
   <div class="col-12 col-sm-6 col-lg-4"><div class="card p-3 text-center">
-    <h5>Units Sold Today</h5><h3>{{ today_units }}</h3></div></div>
+    <h5>Your Sales Today</h5><h3>{{ currency }}{{ '{:,.2f}'.format(my_today_rev) }}</h3></div></div>
   <div class="col-12 col-sm-6 col-lg-4"><div class="card p-3 text-center">
-    <h5>&nbsp;</h5><h3 class="text-muted">&nbsp;</h3></div></div>
+    <h5>Your Units Sold Today</h5><h3>{{ my_today_units }}</h3></div></div>
 </div>
 {% endif %}
 <!-- Low-stock section visible to all roles -->

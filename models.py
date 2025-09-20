@@ -31,8 +31,10 @@ class Sale(db.Model):
     date = db.Column(db.Date, default=date.today, nullable=False)
     qty_sold = db.Column(db.Integer, nullable=False)
     unit_price = db.Column(db.Float)
+    cashier_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     product = db.relationship('Product', backref=db.backref('sales', lazy=True))
+    cashier = db.relationship('User', backref=db.backref('sales', lazy=True))
 
 
 class User(UserMixin, db.Model):
