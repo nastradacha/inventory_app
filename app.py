@@ -497,14 +497,34 @@ def sales_list():
 def edit_sale(sid):
     sale = Sale.query.get_or_404(sid)
     form = EditSaleForm(obj=sale)
+
     if form.validate_on_submit():
+        # Adjust inventory based on new quantity
         diff = form.qty_sold.data - sale.qty_sold   # positive → increase sale qty
         sale.qty_sold = form.qty_sold.data
         sale.product.qty_at_hand -= diff            # keep inventory in sync
+
+        # Determine old and new effective unit price
+        old_effective = sale.unit_price if sale.unit_price is not None else sale.product.selling_price
+        new_unit_price = form.unit_price.data  # may be None
+        new_effective = new_unit_price if new_unit_price is not None else sale.product.selling_price
+
+        # Apply price change
+        sale.unit_price = new_unit_price
+
+        # Audit if price changed
+        if float(new_effective or 0) != float(old_effective or 0):
+            db.session.add(LogEntry(
+                user=current_user.username,
+                action='edit_sale_price',
+                details=f"Sale #{sale.id} {sale.product.name}: {app.config['CURRENCY_SYMBOL']}{old_effective:.2f} → {app.config['CURRENCY_SYMBOL']}{new_effective:.2f}"
+            ))
+
         db.session.commit()
         flash('Sale updated', 'success')
-        return redirect(url_for('sales_today'))
-    return render_template('edit_sale.html', form=form, sale=sale)
+        sale_date = sale.date
+        return redirect(url_for('sales_list', date=sale_date.isoformat()))
+    return render_template('edit_sale.html', form=form, sale=sale, currency=app.config['CURRENCY_SYMBOL'])
 
 @app.route('/sale/<int:sid>/void', methods=['POST'])
 @login_required

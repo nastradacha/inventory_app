@@ -55,6 +55,7 @@ class LoginForm(FlaskForm):
 
 class EditSaleForm(FlaskForm):
     qty_sold = IntegerField('Quantity', validators=[NumberRange(min=1)])
+    unit_price = FloatField('Unit price (optional override)', validators=[Optional(), NumberRange(min=0.01)])
     submit   = SubmitField('Save')
 
 class BatchInventoryForm(FlaskForm):
