@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 <h1 class="mb-4">Dashboard</h1>
+{% if current_user.role == 'manager' %}
 <div class="row g-3 mb-4">
   <div class="col-12 col-sm-6 col-lg-4"><div class="card p-3 text-center">
     <h5>Total Inventory Cost</h5><h3>{{ currency }}{{ '{:,.2f}'.format(total_cost) }}</h3></div></div>
@@ -8,7 +9,18 @@
     <h5>Potential Revenue</h5><h3>{{ currency }}{{ '{:,.2f}'.format(total_value) }}</h3></div></div>
   <div class="col-12 col-sm-6 col-lg-4"><div class="card p-3 text-center">
     <h5>Potential Profit</h5><h3>{{ currency }}{{ '{:,.2f}'.format(total_profit) }}</h3></div></div>
+  </div>
+{% else %}
+<div class="row g-3 mb-4">
+  <div class="col-12 col-sm-6 col-lg-4"><div class="card p-3 text-center">
+    <h5>Today's Store Sales</h5><h3>{{ currency }}{{ '{:,.2f}'.format(today_rev) }}</h3></div></div>
+  <div class="col-12 col-sm-6 col-lg-4"><div class="card p-3 text-center">
+    <h5>Units Sold Today</h5><h3>{{ today_units }}</h3></div></div>
+  <div class="col-12 col-sm-6 col-lg-4"><div class="card p-3 text-center">
+    <h5>&nbsp;</h5><h3 class="text-muted">&nbsp;</h3></div></div>
 </div>
+{% endif %}
+<!-- Low-stock section visible to all roles -->
 <!-- Improved Low-stock Section -->
 <div class="card mb-4">
   <div class="card-header d-flex justify-content-between align-items-center">
@@ -38,6 +50,7 @@
     </div>
   </div>
 </div>
+
 
 
 <div class="card">

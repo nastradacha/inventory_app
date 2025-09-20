@@ -66,6 +66,24 @@ def dashboard():
     total_cost = sum(p.qty_at_hand * p.cost_price for p in products)
     total_value = sum(p.qty_at_hand * p.selling_price for p in products)
     total_profit = total_value - total_cost
+    # Today's store-wide sales stats
+    today = date.today()
+    today_row = (
+        db.session.query(
+            db.func.coalesce(
+                db.func.sum(
+                    Sale.qty_sold * db.func.coalesce(Sale.unit_price, Product.selling_price)
+                ),
+                0.0,
+            ).label('rev'),
+            db.func.coalesce(db.func.sum(Sale.qty_sold), 0).label('units'),
+        )
+        .join(Product)
+        .filter(Sale.date == today)
+        .first()
+    )
+    today_rev = float(today_row[0] or 0.0)
+    today_units = int(today_row[1] or 0)
     low_stock = Product.query.filter(Product.qty_at_hand < Product.safety_stock).order_by(Product.qty_at_hand.asc()).limit(20).all()
     top_sales = (
         db.session.query(Product.name, db.func.sum(Sale.qty_sold).label('units'))
