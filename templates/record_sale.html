@@ -41,7 +41,19 @@
       Not enough stock!
     </div>
   </div>
-  
+
+  <!-- Sale date (allow backdating, not future) -->
+  <div class="col-md-6">
+    <div class="d-flex justify-content-between align-items-center mb-1">
+      {{ form.sale_date.label(class_='form-label') }}
+      <div class="text-muted small">No future dates</div>
+    </div>
+    {{ form.sale_date(class_='form-control', max=today, **{'data-testid':'sale-date'}) }}
+    {% if form.sale_date.errors %}
+      <div class="text-danger small">{{ form.sale_date.errors[0] }}</div>
+    {% endif %}
+  </div>
+
   <!-- Optional alternate unit price -->
   <div class="col-md-6">
     <div class="d-flex justify-content-between align-items-center mb-1">

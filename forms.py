@@ -2,6 +2,7 @@ from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileRequired, FileAllowed
 from wtforms import StringField, IntegerField, FloatField, DateField, SelectField, SubmitField, BooleanField
 from wtforms.validators import DataRequired, NumberRange,  ValidationError, Optional
+from datetime import date
 from models import Product
 
 class AddStockForm(FlaskForm):
@@ -22,12 +23,17 @@ class RecordSaleForm(FlaskForm):
     product_id = IntegerField('Product ID', validators=[DataRequired()])  # Changed to IntegerField
     quantity = IntegerField('Quantity sold', validators=[NumberRange(min=1)])
     unit_price = FloatField('Alternate price (optional)', validators=[Optional(), NumberRange(min=0.01)])
+    sale_date = DateField('Sale date', format='%Y-%m-%d', default=date.today, validators=[DataRequired()])
     submit = SubmitField('Record Sale')
     
     # Add custom validation for product existence
     def validate_product_id(self, field):
         if not Product.query.get(field.data):
             raise ValidationError('Product not found!')
+
+    def validate_sale_date(self, field):
+        if field.data and field.data > date.today():
+            raise ValidationError('Sale date cannot be in the future.')
 
 
 class NewUserForm(FlaskForm):

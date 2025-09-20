@@ -195,7 +195,7 @@ def record_sale():
             sale = Sale(
                 product_id=product.id,
                 qty_sold=form.quantity.data,
-                date=date.today(),
+                date=form.sale_date.data,
                 unit_price=alt_price if alt_price else None,
             )
             db.session.add(sale)
@@ -215,7 +215,7 @@ def record_sale():
                 flash('Sale recorded.', 'success')
             return redirect(url_for('dashboard'))
     
-    return render_template('record_sale.html', form=form, currency=app.config['CURRENCY_SYMBOL'])
+    return render_template('record_sale.html', form=form, currency=app.config['CURRENCY_SYMBOL'], today=date.today().isoformat())
 
 
 login_manager = LoginManager(app)
