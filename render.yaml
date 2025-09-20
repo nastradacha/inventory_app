@@ -4,5 +4,8 @@ services:
     env: python
     buildCommand: |
       pip install -r requirements.txt
-      flask db upgrade          # ← run migrations on the Render build machine
+    preDeployCommand: flask db upgrade
     startCommand: gunicorn app:app
+    envVars:
+      - key: FLASK_APP
+        value: app.py
