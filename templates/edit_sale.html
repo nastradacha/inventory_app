@@ -6,10 +6,27 @@
   <div class="col-md-6">
     <label class="form-label">Product</label>
     <input class="form-control" value="{{ sale.product.name }}" disabled>
+    <div class="mt-2">
+      <span class="badge bg-secondary">List: {{ currency }}{{ '%.2f' % sale.product.selling_price }}</span>
+      <span class="badge bg-info ms-2">Current sale: {{ currency }}{{ '%.2f' % (sale.unit_price if sale.unit_price is not none else sale.product.selling_price) }}</span>
+    </div>
   </div>
   <div class="col-md-6">
     {{ form.qty_sold.label(class_='form-label') }}
     {{ form.qty_sold(class_='form-control') }}
+  </div>
+  <div class="col-md-6">
+    <div class="d-flex justify-content-between align-items-center mb-1">
+      {{ form.unit_price.label(class_='form-label') }}
+      <div class="text-muted small">Leave blank to use list price</div>
+    </div>
+    <div class="input-group">
+      <span class="input-group-text">{{ currency }}</span>
+      {{ form.unit_price(class_='form-control', step='0.01', min='0.01', placeholder='Leave blank to use list price', **{'data-testid':'edit-alt-price'}) }}
+    </div>
+    {% if form.unit_price.errors %}
+      <div class="text-danger small">{{ form.unit_price.errors[0] }}</div>
+    {% endif %}
   </div>
   <div class="col-12"><button class="btn btn-success">Save</button></div>
 </form>
