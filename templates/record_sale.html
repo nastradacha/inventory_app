@@ -209,7 +209,9 @@ $(document).ready(function() {
   function isBelowCost() {
     if (currentCost == null) return false;
     const entered = parseFloat($('#unit_price').val());
-    const effective = isNaN(entered) || $('#unit_price').val().trim()==='' ? (currentListPrice ?? 0) : entered;
+    const effective = (isNaN(entered) || $('#unit_price').val().trim()==='')
+      ? (currentListPrice !== null ? currentListPrice : 0)
+      : entered;
     return effective < currentCost;
   }
   function checkBelowCost() {
