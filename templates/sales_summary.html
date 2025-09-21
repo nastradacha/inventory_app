@@ -2,7 +2,7 @@
 {% block content %}
 <h3>Sales Reports – {{ breakdown|title }} ({{ start }} to {{ end }})</h3>
 
-<form class="row gy-2 gx-2 align-items-center mb-3">
+<form class="row gy-2 gx-2 align-items-center mb-3" id="filtersForm">
   <div class="col-auto">
     <input type="date" name="start" class="form-control"
            value="{{ start }}" max="{{ end }}"
@@ -30,6 +30,24 @@
       CSV
     </button>
   </div>
+  <div class="col-auto">
+    <button type="button" class="btn btn-outline-secondary"
+            onclick="document.getElementById('export').value='xlsx';this.form.submit();">
+      XLSX
+    </button>
+  </div>
+
+  <!-- Presets -->
+  <div class="col-12"></div>
+  <div class="col-auto">
+    <div class="btn-group" role="group" aria-label="Presets">
+      <button type="button" class="btn btn-sm btn-outline-primary" onclick="preset('today')">Today</button>
+      <button type="button" class="btn btn-sm btn-outline-primary" onclick="preset('yesterday')">Yesterday</button>
+      <button type="button" class="btn btn-sm btn-outline-primary" onclick="preset('this_week')">This Week</button>
+      <button type="button" class="btn btn-sm btn-outline-primary" onclick="preset('mtd')">MTD</button>
+      <button type="button" class="btn btn-sm btn-outline-primary" onclick="preset('last_30')">Last 30 Days</button>
+    </div>
+  </div>
 </form>
 
 <script>
@@ -42,6 +60,35 @@ function clearExportAndSubmit(form){
   const exp = document.getElementById('export');
   if (exp) exp.value = '';
   form.submit();
+}
+
+function toISO(d){
+  const z = n => (n<10? '0'+n : ''+n);
+  return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}`;
+}
+function preset(kind){
+  const now = new Date();
+  let s, e;
+  const dow = now.getDay(); // 0 Sun .. 6 Sat
+  if (kind==='today'){
+    s = e = now;
+  } else if (kind==='yesterday'){
+    const y = new Date(now); y.setDate(now.getDate()-1); s = e = y;
+  } else if (kind==='this_week'){
+    // Assume week starts Monday
+    const d = (dow===0? 6 : dow-1); // 0..6 Mon..Sun
+    s = new Date(now); s.setDate(now.getDate()-d);
+    e = now;
+  } else if (kind==='mtd'){
+    s = new Date(now.getFullYear(), now.getMonth(), 1);
+    e = now;
+  } else if (kind==='last_30'){
+    s = new Date(now); s.setDate(now.getDate()-29);
+    e = now;
+  }
+  document.querySelector('input[name=start]').value = toISO(s);
+  document.querySelector('input[name=end]').value = toISO(e);
+  clearExportAndSubmit(document.getElementById('filtersForm'));
 }
 </script>
 

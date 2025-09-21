@@ -23,13 +23,25 @@ def upgrade():
     op.create_index('ix_sale_cashier_id', 'sale', ['cashier_id'], unique=False)
     # Composite index for common dashboard query (date + cashier)
     op.create_index('ix_sale_date_cashier', 'sale', ['date', 'cashier_id'], unique=False)
-
-    # Logs table timestamp index
-    op.create_index('ix_logentry_timestamp', 'log_entry', ['timestamp'], unique=False)
+    # Logs table timestamp index (table name may be 'log_entry' or 'logentry' depending on naming)
+    bind = op.get_bind()
+    insp = sa.inspect(bind)
+    tables = set(insp.get_table_names())
+    if 'log_entry' in tables:
+        op.create_index('ix_logentry_timestamp', 'log_entry', ['timestamp'], unique=False)
+    elif 'logentry' in tables:
+        op.create_index('ix_logentry_timestamp', 'logentry', ['timestamp'], unique=False)
 
 
 def downgrade():
-    op.drop_index('ix_logentry_timestamp', table_name='log_entry')
+    # Drop logs index from whichever table name exists
+    try:
+        op.drop_index('ix_logentry_timestamp', table_name='log_entry')
+    except Exception:
+        try:
+            op.drop_index('ix_logentry_timestamp', table_name='logentry')
+        except Exception:
+            pass
     op.drop_index('ix_sale_date_cashier', table_name='sale')
     op.drop_index('ix_sale_cashier_id', table_name='sale')
     op.drop_index('ix_sale_product_id', table_name='sale')

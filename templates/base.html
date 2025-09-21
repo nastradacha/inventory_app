@@ -110,6 +110,13 @@
     document.querySelectorAll('.toast').forEach(el => new bootstrap.Toast(el, {delay:4000}).show());
   });
 </script>
+<footer class="text-center text-muted small py-2 d-none d-sm-block">
+  <span>Version {{ app_version }} • {{ app_env }}</span>
+  {% if current_user.is_authenticated and current_user.role=='manager' %}
+    <span class="ms-2">|</span>
+    <span class="ms-2">User: {{ current_user.username }}</span>
+  {% endif %}
+  </footer>
 <!-- Reusable Confirmation Modal -->
 <div class="modal fade" id="confirmModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">

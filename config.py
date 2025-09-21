@@ -21,3 +21,7 @@ class Config:
         "pool_pre_ping": True,
         "pool_recycle": 280,
     }
+
+    # Flask-Limiter storage backend (silence warning in local dev)
+    # Use Redis in production by setting RATELIMIT_STORAGE_URI=redis://<host>:<port>
+    RATELIMIT_STORAGE_URI = os.getenv("RATELIMIT_STORAGE_URI", "memory://")

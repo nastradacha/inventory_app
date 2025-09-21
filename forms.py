@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileRequired, FileAllowed
-from wtforms import StringField, IntegerField, FloatField, DateField, SelectField, SubmitField, BooleanField
+from wtforms import StringField, IntegerField, FloatField, DateField, SelectField, SubmitField, BooleanField, PasswordField
 from wtforms.validators import DataRequired, NumberRange,  ValidationError, Optional
 from datetime import date
 from models import Product
@@ -38,12 +38,12 @@ class RecordSaleForm(FlaskForm):
 
 class NewUserForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
-    password = StringField('Password', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])
     role = SelectField('Role', choices=[('manager','Manager'),('cashier','Cashier')])
     submit = SubmitField('Create User')
 
 class ResetPwdForm(FlaskForm):
-    password = StringField('New Password', validators=[DataRequired()])
+    password = PasswordField('New Password', validators=[DataRequired()])
     submit = SubmitField('Reset')
 
 class EditProductForm(FlaskForm):
@@ -56,7 +56,7 @@ class EditProductForm(FlaskForm):
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
-    password = StringField('Password', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])
     submit   = SubmitField('Sign In')
 
 class EditSaleForm(FlaskForm):

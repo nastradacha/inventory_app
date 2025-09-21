@@ -10,6 +10,9 @@ from config import Config
 from models import db, Product, Sale, User, PriceChange, LogEntry, Shift
 from forms import AddStockForm, RecordSaleForm, NewUserForm, ResetPwdForm, EditProductForm, EditSaleForm, BatchInventoryForm
 from rapidfuzz import fuzz
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+import subprocess
 
 from sqlalchemy import func, cast, Date, inspect
 from sqlalchemy.exc import SQLAlchemyError
@@ -27,6 +30,10 @@ app.config.from_object(Config)
 
 # Enable CSRF protection for every POST form
 csrf = CSRFProtect(app)
+
+# Rate limiting (Story 2): keep defaults off app-wide; limit only the login route
+limiter = Limiter(key_func=get_remote_address, default_limits=[])
+limiter.init_app(app)
 
 # Register blueprints
 app.register_blueprint(batch_inventory_bp)
@@ -77,14 +84,21 @@ def dashboard():
     low_stock = []
     top_sales = []
 
+    # 1) Products and valuation
     try:
         products = Product.query.all()
         total_cost = sum(p.qty_at_hand * p.cost_price for p in products)
         total_value = sum(p.qty_at_hand * p.selling_price for p in products)
         total_profit = total_value - total_cost
+    except Exception:
+        try:
+            db.session.rollback()
+        except Exception:
+            pass
 
-        # Today's store-wide sales stats
-        today = date.today()
+    # 2) Store totals today
+    today = date.today()
+    try:
         today_row = (
             db.session.query(
                 db.func.coalesce(
@@ -101,16 +115,22 @@ def dashboard():
         )
         today_rev = float(today_row[0] or 0.0)
         today_units = int(today_row[1] or 0)
+    except Exception:
+        try:
+            db.session.rollback()
+        except Exception:
+            pass
 
-        # Cashier-specific metrics; guard against missing column during rolling deploys
-        if current_user.is_authenticated and current_user.role == 'cashier':
+    # 3) Cashier personal totals today (only if column exists)
+    if current_user.is_authenticated and current_user.role == 'cashier':
+        has_cashier_col = False
+        try:
+            cols = [c['name'] for c in inspect(db.engine).get_columns('sale')]
+            has_cashier_col = 'cashier_id' in cols
+        except Exception:
             has_cashier_col = False
+        if has_cashier_col:
             try:
-                cols = [c['name'] for c in inspect(db.engine).get_columns('sale')]
-                has_cashier_col = 'cashier_id' in cols
-            except Exception:
-                has_cashier_col = False
-            if has_cashier_col:
                 my_row = (
                     db.session.query(
                         db.func.coalesce(
@@ -128,7 +148,14 @@ def dashboard():
                 )
                 my_today_rev = float((my_row[0] or 0.0))
                 my_today_units = int((my_row[1] or 0))
+            except Exception:
+                try:
+                    db.session.rollback()
+                except Exception:
+                    pass
 
+    # 4) Low stock list
+    try:
         low_stock = (
             Product.query
             .filter(Product.qty_at_hand < Product.safety_stock)
@@ -136,6 +163,14 @@ def dashboard():
             .limit(20)
             .all()
         )
+    except Exception:
+        try:
+            db.session.rollback()
+        except Exception:
+            pass
+
+    # 5) Top sellers
+    try:
         top_sales = (
             db.session.query(Product.name, db.func.sum(Sale.qty_sold).label('units'))
             .join(Sale)
@@ -145,11 +180,11 @@ def dashboard():
             .all()
         )
     except Exception:
-        # If any DB error occurs, rollback and render safe defaults
         try:
             db.session.rollback()
         except Exception:
             pass
+
     return render_template('dashboard.html', **locals())
 
 @app.route('/add-stock', methods=['GET', 'POST'])
@@ -245,6 +280,20 @@ def search_products():
 
 
 
+@app.route('/product-stock/<int:pid>')
+@login_required
+def product_stock(pid):
+    """Return current stock, list price, and cost for a single product.
+    Used by Record Sale UI for hints and below-cost warnings (Story 1).
+    """
+    p = Product.query.get(pid)
+    if not p:
+        return jsonify(success=False, error='not_found'), 404
+    return jsonify(success=True,
+                   stock=p.qty_at_hand,
+                   price=float(p.selling_price or 0.0),
+                   cost=float(p.cost_price or 0.0))
+
 @app.route('/record-sale', methods=['GET', 'POST'])
 @login_required
 def record_sale():
@@ -263,9 +312,30 @@ def record_sale():
         if product.qty_at_hand < form.quantity.data:
             flash('Not enough stock!', 'danger')
         else:
-            product.qty_at_hand -= form.quantity.data
-            # Allow optional alternate price
+            # Below-cost guard (Story 1)
             alt_price = form.unit_price.data
+            effective = float(alt_price) if alt_price else float(product.selling_price or 0)
+            if effective < float(product.cost_price or 0):
+                if current_user.role != 'manager':
+                    # Block for cashiers; audit attempt
+                    db.session.add(LogEntry(
+                        user=current_user.username,
+                        action='below_cost_attempt_blocked',
+                        details=f"Attempted {form.quantity.data} × {product.name} at {app.config['CURRENCY_SYMBOL']}{effective:.2f} (< cost {app.config['CURRENCY_SYMBOL']}{product.cost_price:.2f})"
+                    ))
+                    db.session.commit()
+                    flash('Price below cost is not allowed. Please ask a manager.', 'danger')
+                    return redirect(url_for('record_sale'))
+                else:
+                    # Allow for managers but audit override
+                    db.session.add(LogEntry(
+                        user=current_user.username,
+                        action='below_cost_override',
+                        details=f"Manager approved {form.quantity.data} × {product.name} at {app.config['CURRENCY_SYMBOL']}{effective:.2f} (< cost {app.config['CURRENCY_SYMBOL']}{product.cost_price:.2f})"
+                    ))
+
+            # Proceed to record sale
+            product.qty_at_hand -= form.quantity.data
             sale = Sale(
                 product_id=product.id,
                 qty_sold=form.quantity.data,
@@ -318,6 +388,7 @@ def manager_required(f):
 
 @app.route('/login', methods=['GET', 'POST'])
 @csrf.exempt                              # allow login even if token missing (fallback)
+@limiter.limit("5 per 15 minutes")
 def login():
     form = LoginForm()
     if form.validate_on_submit():
@@ -441,18 +512,6 @@ def delete_user(user_id):
     flash('User deleted', 'info')
     return redirect(url_for('users'))
 
-@app.route('/product-stock/<int:product_id>')
-@login_required
-def product_stock(product_id):
-    product = Product.query.get(product_id)
-    if product:
-        return jsonify({
-            'success': True,
-            'stock': product.qty_at_hand,
-            'name': product.name,
-            'price': product.selling_price
-        })
-    return jsonify({'success': False, 'message': 'Product not found'}), 404
 
 @app.route('/products')
 @login_required
@@ -574,21 +633,47 @@ def sales_list():
 
 @app.route('/sale/<int:sid>/edit', methods=['GET','POST'])
 @login_required
-@manager_required
 def edit_sale(sid):
     sale = Sale.query.get_or_404(sid)
     form = EditSaleForm(obj=sale)
 
     if form.validate_on_submit():
-        # Adjust inventory based on new quantity
-        diff = form.qty_sold.data - sale.qty_sold   # positive → increase sale qty
-        sale.qty_sold = form.qty_sold.data
-        sale.product.qty_at_hand -= diff            # keep inventory in sync
-
-        # Determine old and new effective unit price
-        old_effective = sale.unit_price if sale.unit_price is not None else sale.product.selling_price
+        # Determine intended new values first
+        new_qty = form.qty_sold.data
         new_unit_price = form.unit_price.data  # may be None
         new_effective = new_unit_price if new_unit_price is not None else sale.product.selling_price
+
+        # Below-cost guard (still enforced for cashiers)
+        if float(new_effective or 0) < float(sale.product.cost_price or 0):
+            if current_user.role != 'manager':
+                db.session.add(LogEntry(
+                    user=current_user.username,
+                    action='below_cost_attempt_blocked',
+                    details=f"Attempted edit sale #{sale.id} {sale.product.name} @ {app.config['CURRENCY_SYMBOL']}{float(new_effective):.2f} (< cost {app.config['CURRENCY_SYMBOL']}{sale.product.cost_price:.2f})"
+                ))
+                db.session.commit()
+                flash('Below-cost price is not allowed. Ask a manager.', 'danger')
+                return render_template('edit_sale.html', form=form, sale=sale, currency=app.config['CURRENCY_SYMBOL'])
+            else:
+                db.session.add(LogEntry(
+                    user=current_user.username,
+                    action='below_cost_override',
+                    details=f"Manager approved edit sale #{sale.id} {sale.product.name} @ {app.config['CURRENCY_SYMBOL']}{float(new_effective):.2f} (< cost {app.config['CURRENCY_SYMBOL']}{sale.product.cost_price:.2f})"
+                ))
+
+        # Adjust inventory based on quantity diff
+        diff = new_qty - sale.qty_sold
+        if diff != 0:
+            db.session.add(LogEntry(
+                user=current_user.username,
+                action='edit_sale_qty',
+                details=f"Sale #{sale.id} {sale.product.name}: qty {sale.qty_sold} → {new_qty}"
+            ))
+        sale.qty_sold = new_qty
+        sale.product.qty_at_hand -= diff
+
+        # Determine old effective unit price
+        old_effective = sale.unit_price if sale.unit_price is not None else sale.product.selling_price
 
         # Apply price change
         sale.unit_price = new_unit_price
@@ -598,11 +683,15 @@ def edit_sale(sid):
             db.session.add(LogEntry(
                 user=current_user.username,
                 action='edit_sale_price',
-                details=f"Sale #{sale.id} {sale.product.name}: {app.config['CURRENCY_SYMBOL']}{old_effective:.2f} → {app.config['CURRENCY_SYMBOL']}{new_effective:.2f}"
+                details=f"Sale #{sale.id} {sale.product.name}: {app.config['CURRENCY_SYMBOL']}{old_effective:.2f} → {app.config['CURRENCY_SYMBOL']}{float(new_effective or 0):.2f}"
             ))
 
         db.session.commit()
-        flash('Sale updated', 'success')
+        # Role-specific success message
+        if current_user.role == 'cashier':
+            flash('Sale updated – your manager has been notified.', 'info')
+        else:
+            flash('Sale updated', 'success')
         sale_date = sale.date
         return redirect(url_for('sales_list', date=sale_date.isoformat()))
     return render_template('edit_sale.html', form=form, sale=sale, currency=app.config['CURRENCY_SYMBOL'])
@@ -679,6 +768,19 @@ def close_shift():
 def logs():
     logs = LogEntry.query.order_by(LogEntry.timestamp.desc()).limit(200).all()
     return render_template('logs.html', logs=logs)
+
+
+# Version metadata injected to templates (Story 3)
+@app.context_processor
+def inject_app_meta():
+    def _git_sha_short():
+        try:
+            return subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD']).decode().strip()
+        except Exception:
+            return None
+    sha = os.getenv('RENDER_GIT_COMMIT') or os.getenv('GIT_COMMIT') or _git_sha_short()
+    env = os.getenv('APP_ENV', 'Development')
+    return dict(app_version=(sha or 'dev'), app_env=env)
 
 
 @app.route('/shifts')
@@ -788,7 +890,7 @@ def sales_summary():
 
     # ── 2. Other query-string controls  ────────────────────────────────
     breakdown = request.args.get("breakdown", "summary")     # summary|category|product
-    export    = request.args.get("export")                   # csv|pdf (pdf unused)
+    export    = request.args.get("export")                   # csv|xlsx
 
     # ── 3. Aggregate once per day inside the range  ────────────────────
     rows = _aggregate_sales_range(start, end)                # list of dicts
@@ -842,12 +944,22 @@ def sales_summary():
         chart_labels = [r["bucket"] for r in gp_data]
         chart_values = [r["rev"]   for r in gp_data]
 
-    # ── 5. CSV export (same range & breakdown)  ────────────────────────
+    # ── 5. CSV/XLSX export (same range & breakdown)  ───────────────────
     if export == "csv":
         df = pd.DataFrame(view_rows)
         filename = f"sales_{breakdown}_{start}_{end}.csv"
         return send_file(BytesIO(df.to_csv(index=False).encode()),
                          "text/csv",
+                         download_name=filename,
+                         as_attachment=True)
+    if export == "xlsx":
+        df = pd.DataFrame(view_rows)
+        xbuf = BytesIO()
+        df.to_excel(xbuf, index=False)
+        xbuf.seek(0)
+        filename = f"sales_{breakdown}_{start}_{end}.xlsx"
+        return send_file(xbuf,
+                         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                          download_name=filename,
                          as_attachment=True)
 

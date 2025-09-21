@@ -67,6 +67,7 @@
     {% if form.unit_price.errors %}
       <div class="text-danger small">{{ form.unit_price.errors[0] }}</div>
     {% endif %}
+    <div id="below-cost-alert" class="text-danger small mt-1 d-none">Below cost</div>
   </div>
 
   <div class="col-12">
@@ -79,7 +80,10 @@
 {{ super() }}
 <script>
 $(document).ready(function() {
-  const currency = {{ currency|tojson }};
+  const currencySymbol = {{ currency|tojson }};
+  const canOverrideBelowCost = {{ (current_user.is_authenticated and current_user.role == 'manager') | tojson }};
+  let currentCost = null;
+  let currentListPrice = null;
   // Initialize Select2 with AJAX search
   const productSelect = $('#product-search');
   productSelect.select2({
@@ -119,11 +123,14 @@ $(document).ready(function() {
               $('#list-price').text(Number(data.price).toFixed(2));
               $('#price-indicator').removeClass('d-none');
               // update placeholder to show default list price
-              $('#unit_price').attr('placeholder', `${currency}${Number(data.price).toFixed(2)} (default)`);
+              $('#unit_price').attr('placeholder', `${currencySymbol}${Number(data.price).toFixed(2)} (default)`);
+              currentListPrice = Number(data.price);
             } else {
               $('#price-indicator').addClass('d-none');
               $('#unit_price').attr('placeholder', 'Leave blank to use list price');
+              currentListPrice = null;
             }
+            currentCost = (typeof data.cost === 'number') ? Number(data.cost) : null;
             
             // Update max quantity hint
             $('#max-quantity').text(data.stock);
@@ -135,6 +142,9 @@ $(document).ready(function() {
             
             // Validate current quantity value
             validateQuantity(quantityField.val(), data.stock);
+
+            // Re-check below-cost state based on current input
+            checkBelowCost();
           }
         });
     } else {
@@ -142,6 +152,9 @@ $(document).ready(function() {
       $('#price-indicator').addClass('d-none');
       $('#unit_price').attr('placeholder', 'Leave blank to use list price');
       $('#max-quantity-hint').addClass('d-none');
+      $('#below-cost-alert').addClass('d-none');
+      currentCost = null;
+      currentListPrice = null;
     }
   });
 
@@ -160,6 +173,11 @@ $(document).ready(function() {
       e.preventDefault();
       $('#quantity-error').removeClass('d-none');
       $('#quantity').addClass('is-invalid');
+    }
+    // Prevent submit for cashiers if below-cost detected
+    if (!canOverrideBelowCost && isBelowCost()) {
+      e.preventDefault();
+      $('#below-cost-alert').removeClass('d-none');
     }
     if (!e.isDefaultPrevented()) {
       $('#submit-btn').prop('disabled', true);
@@ -180,9 +198,34 @@ $(document).ready(function() {
     } else {
       errorElement.addClass('d-none');
       $('#quantity').removeClass('is-invalid');
-      submitBtn.prop('disabled', false);
+      // don't override below-cost triggered disable
+      if (!(!canOverrideBelowCost && isBelowCost())) {
+        submitBtn.prop('disabled', false);
+      }
     }
   }
+
+  // Below-cost helpers
+  function isBelowCost() {
+    if (currentCost == null) return false;
+    const entered = parseFloat($('#unit_price').val());
+    const effective = isNaN(entered) || $('#unit_price').val().trim()==='' ? (currentListPrice ?? 0) : entered;
+    return effective < currentCost;
+  }
+  function checkBelowCost() {
+    const alert = $('#below-cost-alert');
+    if (isBelowCost()) {
+      alert.removeClass('d-none');
+      if (!canOverrideBelowCost) $('#submit-btn').prop('disabled', true);
+    } else {
+      alert.addClass('d-none');
+      // enable only if quantity valid too
+      if (!(!canOverrideBelowCost && (parseInt($('#quantity').val()) > (parseInt($('#max-quantity').text())||0)))) {
+        $('#submit-btn').prop('disabled', false);
+      }
+    }
+  }
+  $('#unit_price').on('input', checkBelowCost);
 });
 </script>
 {% endblock %}
