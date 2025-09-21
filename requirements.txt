@@ -12,4 +12,5 @@ python-dotenv==1.1.0
 RapidFuzz==3.13.0
 SQLAlchemy==2.0.41
 SQLAlchemy-Utils==0.39.0
-WeasyPrint[visual]==64.1Flask-Limiter==3.5.1
+WeasyPrint[visual]==64.1
+Flask-Limiter==3.5.1
