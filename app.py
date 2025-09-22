@@ -300,14 +300,23 @@ def record_sale():
     form = RecordSaleForm()
     
     # Remove the choices population completely
-    
+    # Preserve selected sale_date from query string for quick multi-entry
+    if request.method == 'GET':
+        qs_date = request.args.get('date')
+        if qs_date:
+            try:
+                form.sale_date.data = date.fromisoformat(qs_date)
+            except ValueError:
+                pass
+
     if form.validate_on_submit():
         # Get product from ID instead of form choices
         product = Product.query.get(form.product_id.data)
         
         if not product:
             flash('Product not found!', 'danger')
-            return redirect(url_for('record_sale'))
+            # keep the chosen date when returning to the form
+            return redirect(url_for('record_sale', date=form.sale_date.data.isoformat() if form.sale_date.data else None))
             
         if product.qty_at_hand < form.quantity.data:
             flash('Not enough stock!', 'danger')
@@ -325,7 +334,7 @@ def record_sale():
                     ))
                     db.session.commit()
                     flash('Price below cost is not allowed. Please ask a manager.', 'danger')
-                    return redirect(url_for('record_sale'))
+                    return redirect(url_for('record_sale', date=form.sale_date.data.isoformat() if form.sale_date.data else None))
                 else:
                     # Allow for managers but audit override
                     db.session.add(LogEntry(
@@ -364,7 +373,8 @@ def record_sale():
                 flash('Sale recorded with alternate price.', 'success')
             else:
                 flash('Sale recorded.', 'success')
-            return redirect(url_for('dashboard'))
+            # Redirect back to Record Sale to allow rapid multi-entry; preserve date
+            return redirect(url_for('record_sale', date=form.sale_date.data.isoformat() if form.sale_date.data else None))
     
     return render_template('record_sale.html', form=form, currency=app.config['CURRENCY_SYMBOL'], today=date.today().isoformat())
 
@@ -599,6 +609,51 @@ def delete_product(pid):
     return redirect(url_for('products'))
 
 
+@app.route('/product/<int:pid>/update-qty', methods=['POST'])
+@login_required
+@manager_required
+def update_product_qty(pid):
+    """Inline adjust stock quantity from the products list.
+    Accepts a 'delta' integer to add/subtract from current qty. Preserves filters.
+    """
+    p = Product.query.get_or_404(pid)
+    # Preserve list state
+    sort = request.form.get('sort')
+    order = request.form.get('order')
+    search = request.form.get('search')
+    try:
+        page = int(request.form.get('page') or 1)
+    except (TypeError, ValueError):
+        page = 1
+
+    # Parse delta
+    try:
+        raw = request.form.get('delta')
+        delta = int(raw) if raw not in (None, '') else 0
+    except (TypeError, ValueError):
+        flash('Enter a valid quantity adjustment.', 'warning')
+        return redirect(url_for('products', sort=sort, order=order, search=search, page=page))
+
+    if delta == 0:
+        flash('No change applied.', 'info')
+        return redirect(url_for('products', sort=sort, order=order, search=search, page=page))
+
+    old_qty = int(p.qty_at_hand or 0)
+    new_qty = old_qty + delta
+    if new_qty < 0:
+        flash('Resulting quantity cannot be negative.', 'danger')
+        return redirect(url_for('products', sort=sort, order=order, search=search, page=page))
+
+    p.qty_at_hand = new_qty
+    db.session.add(LogEntry(
+        user=current_user.username,
+        action='adjust_stock',
+        details=f"{p.name}: {old_qty} {'+' if delta >= 0 else ''}{delta} → {new_qty}"
+    ))
+    db.session.commit()
+    flash('Inventory updated', 'success')
+    return redirect(url_for('products', sort=sort, order=order, search=search, page=page))
+
 @app.route('/sales', methods=['GET'])
 @login_required          # add @manager_required if only managers may browse
 def sales_list():
@@ -618,7 +673,7 @@ def sales_list():
     db.session.query(Sale, Product)
     .join(Product)
     .filter(func.date(Sale.date) == sel_date)   # cast to DATE if Sale.date is DateTime
-    .order_by(Sale.id.desc())
+    .order_by(Sale.id.asc())
     .all()
     )
 

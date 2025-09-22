@@ -52,6 +52,7 @@
             Qty
           </a>
         </th>
+        <th class="text-end">Adjust</th>
         <th class="text-end {{ 'sort-asc' if sort_by == 'price' and sort_order == 'asc' else 'sort-desc' if sort_by == 'price' and sort_order == 'desc' else '' }}">
           <a href="{{ url_for('products', sort='price', order='asc' if sort_by != 'price' or sort_order == 'desc' else 'desc', search=search_query) }}" class="text-decoration-none text-dark">
             Selling Price
@@ -65,6 +66,17 @@
       <tr>
         <td data-label="Product">{{ p.name }}</td>
         <td class="text-end" data-label="Quantity">{{ p.qty_at_hand }}</td>
+        <td class="text-end" data-label="Adjust">
+          <form action="{{ url_for('update_product_qty', pid=p.id) }}" method="post" class="d-inline-flex align-items-center gap-1">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="sort" value="{{ sort_by }}">
+            <input type="hidden" name="order" value="{{ sort_order }}">
+            <input type="hidden" name="search" value="{{ search_query }}">
+            <input type="hidden" name="page" value="{{ pagination.page if pagination else 1 }}">
+            <input type="number" name="delta" class="form-control form-control-sm text-end" style="width:6rem" placeholder="+5 or -2" step="1">
+            <button class="btn btn-sm btn-outline-secondary">Update</button>
+          </form>
+        </td>
         <td class="text-end" data-label="Price">{{ currency }}{{ p.selling_price }}</td>
         <td class="text-end" data-label="Actions">
           <div class="btn-group btn-group-sm" role="group">
