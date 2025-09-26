@@ -160,13 +160,23 @@
     }
   });
 </script>
-<footer class="text-center text-muted small py-2 d-none d-sm-block">
-  <span>Version {{ app_version }} • {{ app_env }}</span>
+{% if app_env == 'Production' %}
   {% if current_user.is_authenticated and current_user.role=='manager' %}
-    <span class="ms-2">|</span>
-    <span class="ms-2">User: {{ current_user.username }}</span>
+    <footer class="text-center text-muted small py-2 d-none d-sm-block">
+      <span>Version {{ app_version }} • {{ app_env }}</span>
+      <span class="ms-2">|</span>
+      <span class="ms-2">User: {{ current_user.username }}</span>
+    </footer>
   {% endif %}
+{% else %}
+  <footer class="text-center text-muted small py-2 d-none d-sm-block">
+    <span>Version {{ app_version }} • {{ app_env }}</span>
+    {% if current_user.is_authenticated and current_user.role=='manager' %}
+      <span class="ms-2">|</span>
+      <span class="ms-2">User: {{ current_user.username }}</span>
+    {% endif %}
   </footer>
+{% endif %}
 <!-- Reusable Confirmation Modal -->
 <div class="modal fade" id="confirmModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">

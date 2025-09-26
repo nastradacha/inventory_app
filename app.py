@@ -423,13 +423,26 @@ def manager_required(f):
     return wrapper
 
 
+def _ip_limit_decorator():
+    """Return a pass-through decorator in Production to disable IP limit,
+    otherwise apply the configured per-IP limiter in non-production.
+    """
+    env = (app.config.get('APP_ENV') or os.getenv('APP_ENV') or 'Development').lower()
+    if env == 'production':
+        def passthrough(fn):
+            return fn
+        return passthrough
+    else:
+        return limiter.limit(
+            lambda: app.config.get('LOGIN_IP_LIMIT', '200 per 15 minutes'),
+            methods=["POST"],
+            key_func=get_remote_address
+        )
+
 @app.route('/login', methods=['GET', 'POST'])
 @csrf.exempt                              # allow login even if token missing (fallback)
-@limiter.limit(
-    "20 per 15 minutes",
-    methods=["POST"],
-    key_func=lambda: (request.form.get("username") or get_remote_address())
-)
+@limiter.limit(lambda: app.config.get('LOGIN_RATE_LIMIT', '50 per 15 minutes'), methods=["POST"], key_func=lambda: (request.form.get("username") or get_remote_address()))
+@_ip_limit_decorator()
 def login():
     form = LoginForm()
     if form.validate_on_submit():
@@ -871,10 +884,13 @@ def inject_app_meta():
             return subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD']).decode().strip()
         except Exception:
             return None
-    sha = os.getenv('RENDER_GIT_COMMIT') or os.getenv('GIT_COMMIT') or _git_sha_short()
+    sha_env = os.getenv('RENDER_GIT_COMMIT') or os.getenv('GIT_COMMIT')
+    sha = sha_env or _git_sha_short()
+    version_short = (sha[:7] if sha else 'dev')
     env = os.getenv('APP_ENV', 'Development')
+    env_title = (env.title() if env else 'Development')
     owner_email = app.config.get('ERROR_REPORT_EMAIL_TO')
-    return dict(app_version=(sha or 'dev'), app_env=env, owner_email=owner_email)
+    return dict(app_version=version_short, app_env=env_title, owner_email=owner_email)
 
 
 @app.errorhandler(429)
