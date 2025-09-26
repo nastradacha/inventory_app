@@ -15,7 +15,7 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 import subprocess
 
-from sqlalchemy import func, cast, Date, inspect
+from sqlalchemy import func, cast, Date, inspect, text
 from sqlalchemy.exc import SQLAlchemyError
 import pandas as pd
 from io import StringIO
@@ -199,6 +199,20 @@ def ping():
 def favicon_redirect():
     # serve svg favicon when browser requests .ico path
     return redirect(url_for('static', filename='favicon.svg'))
+
+@app.route('/healthz')
+def healthz():
+    # Health check for Render. Try a lightweight DB ping but return ok even if DB fails,
+    # so the service can come up and migrations can run during preDeploy.
+    try:
+        db.session.execute(text('SELECT 1'))
+        return 'ok', 200
+    except Exception:
+        try:
+            db.session.rollback()
+        except Exception:
+            pass
+        return 'ok', 200
 
 @app.route('/add-stock', methods=['GET', 'POST'])
 def add_stock():
