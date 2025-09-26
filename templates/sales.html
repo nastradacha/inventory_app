@@ -11,6 +11,12 @@
            max="{{ today.isoformat() }}"
            onchange="this.form.submit()">
   </div>
+  <div class="col-auto">
+    <div class="btn-group">
+      <a class="btn btn-outline-secondary btn-sm {{ 'active' if order=='asc' }}" href="{{ url_for('sales_list', date=sel_date.isoformat(), order='asc') }}">Oldest First</a>
+      <a class="btn btn-outline-secondary btn-sm {{ 'active' if order=='desc' }}" href="{{ url_for('sales_list', date=sel_date.isoformat(), order='desc') }}">Newest First</a>
+    </div>
+  </div>
 </form>
 
 <div class="table-responsive">

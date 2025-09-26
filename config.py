@@ -25,10 +25,12 @@ class Config:
     }
 
     # Flask-Limiter storage backend (silence warning in local dev)
-    # Use Redis in production by setting RATELIMIT_STORAGE_URI=redis://<host>:<port>
     RATELIMIT_STORAGE_URI = os.getenv("RATELIMIT_STORAGE_URI", "memory://")
     # Keep cashier sessions alive through the workday (can override via SESSION_HOURS)
     PERMANENT_SESSION_LIFETIME = timedelta(hours=int(os.getenv("SESSION_HOURS", "12")))
     # Optional owner contact used in prefilled share links (not sent automatically)
     ERROR_REPORT_EMAIL_TO = os.getenv("ERROR_REPORT_EMAIL_TO", "")
     ERROR_REPORT_SMS_TO = os.getenv("ERROR_REPORT_SMS_TO", "")
+    # Login rate limits (configurable via env)
+    LOGIN_RATE_LIMIT = os.getenv("LOGIN_RATE_LIMIT", "50 per 15 minutes")  # per-username
+    LOGIN_IP_LIMIT = os.getenv("LOGIN_IP_LIMIT", "200 per 15 minutes")      # per-IP safety net
