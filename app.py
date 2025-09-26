@@ -3,6 +3,7 @@ from flask_login import LoginManager, login_user, login_required, current_user, 
 from flask_wtf import CSRFProtect 
 from functools import wraps
 import bcrypt, os
+import uuid, traceback
 from forms import LoginForm 
 
 from datetime import date, datetime,timedelta
@@ -186,6 +187,18 @@ def dashboard():
             pass
 
     return render_template('dashboard.html', **locals())
+
+
+@app.route('/ping')
+@login_required
+def ping():
+    # keepalive endpoint to prevent session timeouts during rapid entry
+    return ('', 204)
+
+@app.route('/favicon.ico')
+def favicon_redirect():
+    # serve svg favicon when browser requests .ico path
+    return redirect(url_for('static', filename='favicon.svg'))
 
 @app.route('/add-stock', methods=['GET', 'POST'])
 def add_stock():
@@ -398,7 +411,11 @@ def manager_required(f):
 
 @app.route('/login', methods=['GET', 'POST'])
 @csrf.exempt                              # allow login even if token missing (fallback)
-@limiter.limit("5 per 15 minutes")
+@limiter.limit(
+    "20 per 15 minutes",
+    methods=["POST"],
+    key_func=lambda: (request.form.get("username") or get_remote_address())
+)
 def login():
     form = LoginForm()
     if form.validate_on_submit():
@@ -407,6 +424,8 @@ def login():
         user = User.query.filter_by(username=username).first()
         if user and bcrypt.checkpw(password.encode(), user.pw_hash.encode()):
             login_user(user)
+            # keep session alive through the workday
+            session.permanent = True
             return redirect(url_for('dashboard'))
         flash('Invalid credentials', 'danger')
     return render_template('login.html', form=form)
@@ -661,6 +680,9 @@ def sales_list():
     # ── 1. read ?date=YYYY-MM-DD, default = today ───────────────────────
     #
     sel = request.args.get('date') or date.today().isoformat()
+    order = (request.args.get('order') or 'asc').lower()
+    if order not in ('asc','desc'):
+        order = 'asc'
     try:
         sel_date = datetime.strptime(sel, "%Y-%m-%d").date()
     except ValueError:
@@ -669,12 +691,13 @@ def sales_list():
     #
     # ── 2. fetch that day’s sales + product info ────────────────────────
     #
+    sale_id_order = Sale.id.asc() if order == 'asc' else Sale.id.desc()
     day_sales = (
-    db.session.query(Sale, Product)
-    .join(Product)
-    .filter(func.date(Sale.date) == sel_date)   # cast to DATE if Sale.date is DateTime
-    .order_by(Sale.id.asc())
-    .all()
+        db.session.query(Sale, Product)
+        .join(Product)
+        .filter(func.date(Sale.date) == sel_date)   # cast to DATE if Sale.date is DateTime
+        .order_by(sale_id_order)
+        .all()
     )
 
 
@@ -682,7 +705,8 @@ def sales_list():
         "sales.html",
         sales=day_sales,
         sel_date=sel_date,
-        today=date.today()        # now Jinja can call today.isoformat()
+        today=date.today(),        # now Jinja can call today.isoformat()
+        order=order
     )
 
 
@@ -835,7 +859,49 @@ def inject_app_meta():
             return None
     sha = os.getenv('RENDER_GIT_COMMIT') or os.getenv('GIT_COMMIT') or _git_sha_short()
     env = os.getenv('APP_ENV', 'Development')
-    return dict(app_version=(sha or 'dev'), app_env=env)
+    owner_email = app.config.get('ERROR_REPORT_EMAIL_TO')
+    return dict(app_version=(sha or 'dev'), app_env=env, owner_email=owner_email)
+
+
+@app.errorhandler(429)
+def ratelimit_exceeded(e):
+    # Friendly rate-limit page; applies mainly to login route
+    retry_after = getattr(e, 'retry_after', None)
+    err_id = uuid.uuid4().hex[:8].upper()
+    try:
+        db.session.add(LogEntry(
+            user=(current_user.username if current_user.is_authenticated else 'anon'),
+            action='http_429',
+            details=f"id={err_id} path={request.path} ip={request.remote_addr} ua={request.user_agent.string}"
+        ))
+        db.session.commit()
+    except Exception:
+        try:
+            db.session.rollback()
+        except Exception:
+            pass
+    return render_template('429.html', retry_after=retry_after, error_id=err_id), 429
+
+
+@app.errorhandler(500)
+def internal_error(e):
+    err_id = uuid.uuid4().hex[:8].upper()
+    tb = ''.join(traceback.format_exception(None, e, e.__traceback__))
+    # Sanitize/truncate traceback
+    tb_short = (tb[:2000] + '…') if len(tb) > 2000 else tb
+    try:
+        db.session.add(LogEntry(
+            user=(current_user.username if current_user.is_authenticated else 'anon'),
+            action='server_error',
+            details=f"id={err_id} path={request.path} method={request.method} ua={request.user_agent.string}\n{tb_short}"
+        ))
+        db.session.commit()
+    except Exception:
+        try:
+            db.session.rollback()
+        except Exception:
+            pass
+    return render_template('500.html', error_id=err_id), 500
 
 
 @app.route('/shifts')

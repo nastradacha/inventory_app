@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-5 text-center">
+  <h3 class="mb-3">Something went wrong</h3>
+  <p class="text-muted">We hit an unexpected error. Our apologies.</p>
+  {% if error_id %}
+    <p class="text-muted">Reference ID: <code>{{ error_id }}</code></p>
+    <button class="btn btn-primary" onclick="shareError('server_error','{{ error_id }}')">Report this error</button>
+  {% endif %}
+  <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary mt-3">Back to Dashboard</a>
+</div>
+{% endblock %}

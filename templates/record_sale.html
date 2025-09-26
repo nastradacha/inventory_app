@@ -228,6 +228,10 @@ $(document).ready(function() {
     }
   }
   $('#unit_price').on('input', checkBelowCost);
+  // Keep session alive during rapid multi-entry
+  setInterval(function() {
+    fetch('/ping', {cache: 'no-store'}).catch(() => {});
+  }, 120000); // every 2 minutes
 });
 </script>
 {% endblock %}

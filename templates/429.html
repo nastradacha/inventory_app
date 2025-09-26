@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-5 text-center">
+  <h3 class="mb-3">Too Many Requests</h3>
+  <p class="text-muted">You've hit a temporary limit. Please wait a bit and try again.</p>
+  {% if retry_after %}
+    <p class="text-muted">Retry after approximately {{ retry_after }} seconds.</p>
+  {% endif %}
+  {% if error_id %}
+    <p class="text-muted">Reference ID: <code>{{ error_id }}</code></p>
+    <button class="btn btn-primary" onclick="shareError('rate_limited','{{ error_id }}')">Report this issue</button>
+  {% endif %}
+  <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary mt-3">Back to Dashboard</a>
+</div>
+{% endblock %}
