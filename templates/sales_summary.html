@@ -123,7 +123,7 @@ function preset(kind){
   <thead><tr><th>Category</th><th class="text-end">Revenue</th></tr></thead>
   <tbody>
     {% for cat, rev in rows %}
-    <tr><td>{{ cat or '—' }}</td><td class="text-end">{{ currency }}{{ '%0.2f' % rev }}</td></tr>
+    <tr><td>{{ cat or 'Uncategorized' }}</td><td class="text-end">{{ currency }}{{ '%0.2f' % rev }}</td></tr>
     {% endfor %}
   </tbody>
 </table>

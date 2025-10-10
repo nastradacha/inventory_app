@@ -1064,7 +1064,7 @@ def sales_summary():
             .group_by(Product.category)
             .all()
         )
-        chart_labels = [c for c, _ in view_rows]
+        chart_labels = [c or 'Uncategorized' for c, _ in view_rows]
         chart_values = [float(r or 0) for _, r in view_rows]
 
     elif breakdown == "product":
